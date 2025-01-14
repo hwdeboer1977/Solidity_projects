@@ -1,6 +1,6 @@
 import "../App.css";
 import "./AuctionPage.css";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { ethers } from "ethers";
 import styles from "./ThreeColumns.module.css"; // Import CSS module
 import { WalletContext } from "../WalletContext";
@@ -41,65 +41,80 @@ function AuctionPage() {
 
   // console.log(luckyTokenXContract, inputTokenContract);
   // Function to fetch balances and round data
-  const fetchBalances = async (address) => {
-    if (
-      !inputTokenContract ||
-      !luckyTokenXContract ||
-      !auctionContract ||
-      !address
-    ) {
-      console.error(
-        "Contracts are not initialized or wallet address is missing"
-      );
-      return;
-    }
+  // We will get warning about missing dependencies in useEffect
+  // Best practice is to memoize the functions by useCallback!!
+  const fetchBalances = useCallback(
+    async (address) => {
+      if (
+        !inputTokenContract ||
+        !luckyTokenXContract ||
+        !auctionContract ||
+        !address
+      ) {
+        console.error(
+          "Contracts are not initialized or wallet address is missing"
+        );
+        return;
+      }
 
-    try {
-      // Fetch Input Token Balance
-      const inputTokenBalance = await inputTokenContract.balanceOf(address);
-      const formattedInputTokenBalance = parseFloat(
-        ethers.utils.formatEther(inputTokenBalance)
-      ).toFixed(0);
+      try {
+        // Fetch Input Token Balance
+        const inputTokenBalance = await inputTokenContract.balanceOf(address);
+        const formattedInputTokenBalance = parseFloat(
+          ethers.utils.formatEther(inputTokenBalance)
+        ).toFixed(0);
 
-      // Fetch LuckyX Balance
-      const luckyXBalance = await luckyTokenXContract.balanceOf(address);
-      const formattedLuckyXBalance = parseFloat(
-        ethers.utils.formatEther(luckyXBalance)
-      ).toFixed(0);
+        // Fetch LuckyX Balance
+        const luckyXBalance = await luckyTokenXContract.balanceOf(address);
+        const formattedLuckyXBalance = parseFloat(
+          ethers.utils.formatEther(luckyXBalance)
+        ).toFixed(0);
 
-      // Fetch current round
-      const currentRound = await auctionContract.currentRound();
+        // Fetch current round
+        const currentRound = await auctionContract.currentRound();
 
-      // Fetch total deposits for the current round
-      const totalDeposits = await auctionContract.totalDepositsPerRound(
-        currentRound
-      );
-      const formattedTotalDeposits = ethers.utils.formatEther(totalDeposits);
+        // Fetch total deposits for the current round
+        const totalDeposits = await auctionContract.totalDepositsPerRound(
+          currentRound
+        );
+        const formattedTotalDeposits = ethers.utils.formatEther(totalDeposits);
 
-      // Fetch user's deposits for the current round
-      const userDeposits = await auctionContract.userDeposits(
-        address,
-        currentRound
-      );
-      const formattedUserDeposits = ethers.utils.formatEther(userDeposits);
+        // Fetch user's deposits for the current round
+        const userDeposits = await auctionContract.userDeposits(
+          address,
+          currentRound
+        );
+        const formattedUserDeposits = ethers.utils.formatEther(userDeposits);
 
-      // Calculate expected LuckyX tokens
-      const expectedLuckyX =
-        formattedTotalDeposits > 0
-          ? (formattedUserDeposits * 1000) / formattedTotalDeposits
-          : 0;
+        // Calculate expected LuckyX tokens
+        const expectedLuckyX =
+          formattedTotalDeposits > 0
+            ? (formattedUserDeposits * 1000) / formattedTotalDeposits
+            : 0;
 
-      // Update state
-      setLuckyXBalance(formattedLuckyXBalance);
-      setInputTokenBalance(formattedInputTokenBalance);
-      setCurrentRound(currentRound.toString());
-      setDepositAmountTotalRound(formattedTotalDeposits);
-      setDepositAmountUserRound(formattedUserDeposits);
-      setExpectedLuckyX(expectedLuckyX.toFixed(1));
-    } catch (error) {
-      console.error("Error fetching balances:", error);
-    }
-  };
+        // Update state
+        setLuckyXBalance(formattedLuckyXBalance);
+        setInputTokenBalance(formattedInputTokenBalance);
+        setCurrentRound(currentRound.toString());
+        setDepositAmountTotalRound(formattedTotalDeposits);
+        setDepositAmountUserRound(formattedUserDeposits);
+        setExpectedLuckyX(expectedLuckyX.toFixed(1));
+      } catch (error) {
+        console.error("Error fetching balances:", error);
+      }
+    },
+    [
+      inputTokenContract,
+      luckyTokenXContract,
+      auctionContract,
+      setLuckyXBalance,
+      setInputTokenBalance,
+      setCurrentRound,
+      setDepositAmountTotalRound,
+      setDepositAmountUserRound,
+      setExpectedLuckyX,
+    ]
+  );
 
   // Trigger fetchBalances when dependencies are ready
   useEffect(() => {
@@ -112,6 +127,7 @@ function AuctionPage() {
     luckyTokenXContract,
     auctionContract,
     auctionAddress,
+    fetchBalances,
   ]);
 
   useEffect(() => {
@@ -254,7 +270,7 @@ function AuctionPage() {
       auctionContract.off("Deposit", () => handleEvent("Deposit"));
       auctionContract.off("RoundUpdated", () => handleEvent("RoundUpdated"));
     };
-  }, [auctionContract]);
+  }, [auctionContract, walletAddress, fetchBalances]);
 
   //Listening to event RoundUpdated (update claimable UI when new round)
   useEffect(() => {
@@ -279,7 +295,7 @@ function AuctionPage() {
     return () => {
       auctionContract.off("RoundUpdated", handleRoundUpdatedEvent);
     };
-  }, [auctionContract]);
+  }, [auctionContract, walletAddress, fetchBalances]);
 
   const handleClaim = async (round) => {
     if (!auctionContract) {
@@ -300,7 +316,7 @@ function AuctionPage() {
     }
   };
 
-  const fetchClaimableRounds = async () => {
+  const fetchClaimableRounds = useCallback(async () => {
     if (!auctionContract || !walletAddress) return;
 
     try {
@@ -339,13 +355,13 @@ function AuctionPage() {
     } catch (error) {
       console.error("Error fetching claimable rounds:", error);
     }
-  };
+  }, [auctionContract, walletAddress, setClaimableRounds]); // Add all necessary dependencies;
 
   useEffect(() => {
     if (auctionContract && walletAddress) {
       fetchClaimableRounds();
     }
-  }, [auctionContract, walletAddress]);
+  }, [auctionContract, walletAddress, fetchBalances, fetchClaimableRounds]);
 
   return (
     <div className="App">
