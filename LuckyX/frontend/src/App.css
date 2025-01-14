@@ -28,7 +28,7 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 15px 20px;
   background: linear-gradient(
     120deg,
     #2a2a72,
@@ -36,7 +36,6 @@ main {
   ); /* Same as body gradient */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Optional light border */
-  padding: 15px 20px;
   position: sticky; /* Ensure navbar stays on top */
   top: 0;
   z-index: 100; /* Keep it above other content */
@@ -51,6 +50,7 @@ main {
   display: flex;
   list-style-type: none;
   gap: 15px;
+  transition: all 0.3s ease; /* Smooth open/close transition */
 }
 
 .nav-button {
@@ -70,7 +70,7 @@ main {
   transform: scale(1.1); /* Slight zoom effect */
 }
 
-/* Mobile View: Hamburger Menu */
+/* Hamburger Menu */
 .hamburger-menu {
   display: none;
   background: none;
@@ -80,9 +80,28 @@ main {
   cursor: pointer;
 }
 
+/* Navbar Overlay */
+.navbar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  z-index: 5; /* Below the menu */
+  display: none; /* Initially hidden */
+}
+
+.navbar-overlay.active {
+  display: block; /* Show overlay when active */
+}
+
 @media (max-width: 768px) {
   .hamburger-menu {
     display: block;
+    margin-right: 10px; /* Add spacing */
+    position: relative;
+    z-index: 101; /* Ensure it stays above the dropdown menu */
   }
 
   .navbar-links {
@@ -92,45 +111,43 @@ main {
     background-color: #282c34;
     padding: 10px;
     position: absolute;
-    top: 50px;
+    top: 60px; /* Adjust top position based on navbar height */
     left: 0;
-    width: 100%;
+    width: 100%; /* Full width on mobile */
+    border-radius: 8px; /* Add rounded corners */
     z-index: 10;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for dropdown */
+    opacity: 0;
+    transform: translateY(-20px); /* Slightly hidden initially */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth open/close transition */
   }
 
   .navbar-links.active {
     display: flex;
+    opacity: 1;
+    transform: translateY(0); /* Slide into position */
   }
-}
 
-.fullscreen-background {
-  background-color: #1a2b21; /* Dark green background */
-  height: 100vh; /* Full viewport height */
-  width: 100vw; /* Full viewport width */
-  display: flex; /* Use Flexbox */
-  flex-direction: column; /* Stack content vertically */
-  justify-content: flex-start; /* Align items to the top */
-  align-items: center; /* Center items horizontally */
-  padding-top: 50px; /* Adjust this to position the logo vertically */
-  gap: 20px; /* Add spacing between the logo and text */
+  .navbar-links li {
+    margin-bottom: 10px;
+  }
+
+  .navbar a {
+    padding: 10px;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .connect-wallet {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
 }
 
 .logo {
   width: 50%; /* Adjust size */
   max-width: 600px; /* Limit the maximum width */
   height: auto; /* Maintain aspect ratio */
-}
-
-@media (max-width: 768px) {
-  .fullscreen-background {
-    background-size: cover; /* Switch to cover for smaller screens */
-  }
-}
-
-@media (min-width: 1920px) {
-  .fullscreen-background {
-    background-size: contain; /* Maintain aspect ratio for larger screens */
-  }
 }
 
 /* Navbar Improvements */

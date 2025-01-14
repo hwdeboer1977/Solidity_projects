@@ -19,29 +19,34 @@ import "./App.css";
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Toggle the menu visibility
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen); // Toggle the state of the menu
+    setIsMenuOpen((prev) => !prev);
   };
 
   return (
     <WalletProvider>
       <Router>
         <div className="App">
+          {/* Navbar */}
           <nav className="navbar">
             <div className="navbar-container">
               {/* Logo */}
               <img src="logo.jpg" alt="Logo" className="logo_auction_app" />
 
+              {/* Hamburger Menu */}
               <button className="hamburger-menu" onClick={toggleMenu}>
                 ☰
               </button>
+
+              {/* Navbar Links */}
               <ul className={`navbar-links ${isMenuOpen ? "active" : ""}`}>
-                <NavButton to="/" label="Home" />
-                <NavButton to="/auction" label="Auction" />
-                <NavButton to="/staking" label="Staking" />
-                <NavButton to="/wrap" label="Wrap" />
-                <NavButton to="/stats" label="Stats" />
-                <NavButton to="/docs" label="Docs" />
+                <NavButton to="/" label="Home" onClick={toggleMenu} />
+                <NavButton to="/auction" label="Auction" onClick={toggleMenu} />
+                <NavButton to="/staking" label="Staking" onClick={toggleMenu} />
+                <NavButton to="/wrap" label="Wrap" onClick={toggleMenu} />
+                <NavButton to="/stats" label="Stats" onClick={toggleMenu} />
+                <NavButton to="/docs" label="Docs" onClick={toggleMenu} />
               </ul>
 
               {/* Connect Wallet Button (conditionally rendered) */}
@@ -49,6 +54,7 @@ function App() {
             </div>
           </nav>
 
+          {/* Routes */}
           <Routes>
             <Route path="/" element={<MainPage />} />
             <Route path="/auction" element={<AuctionPage />} />
@@ -62,6 +68,7 @@ function App() {
     </WalletProvider>
   );
 }
+
 // Wrapper to conditionally render the WalletConnect button
 const ConnectWalletWrapper = () => {
   const location = useLocation();
@@ -87,11 +94,12 @@ const ConnectWalletWrapper = () => {
 };
 
 // Custom Button Component for Navigation
-const NavButton = ({ to, label }) => {
+const NavButton = ({ to, label, onClick }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(to);
+    onClick(); // Close the navbar
+    navigate(to); // Navigate to the selected route
   };
 
   return (

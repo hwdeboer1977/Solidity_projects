@@ -226,7 +226,8 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .statistics_auction,
-  .user-stats_auction {
+  .user-stats_auction,
+  .previous-auction-rounds {
     text-align: center;
   }
 
