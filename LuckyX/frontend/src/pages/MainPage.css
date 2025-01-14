@@ -1,0 +1,40 @@
+.fullscreen-background {
+  background-color: #1a2b21; /* Dark green background */
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
+  display: flex; /* Use Flexbox */
+  flex-direction: column; /* Stack content vertically */
+  justify-content: flex-start; /* Align items to the top */
+  align-items: center; /* Center items horizontally */
+  padding-top: 50px; /* Adjust this to position the logo vertically */
+  gap: 20px; /* Add spacing between the logo and text */
+  color: #d4af37; /* Gold color */
+  font-size: 20px;
+}
+
+.logo {
+  width: 50%; /* Adjust size */
+  max-width: 600px; /* Limit the maximum width */
+  height: auto; /* Maintain aspect ratio */
+}
+
+/* Responsive Design for Smaller Screens */
+@media (max-width: 768px) {
+  .wallet-info {
+    font-size: 16px; /* Reduce font size further on smaller screens */
+    max-width: 90%; /* Allow more room for text on smaller screens */
+    right: 10px; /* Reduce right spacing */
+  }
+}
+
+@media (max-width: 768px) {
+  .fullscreen-background {
+    background-size: cover; /* Switch to cover for smaller screens */
+  }
+}
+
+@media (min-width: 1920px) {
+  .fullscreen-background {
+    background-size: contain; /* Maintain aspect ratio for larger screens */
+  }
+}

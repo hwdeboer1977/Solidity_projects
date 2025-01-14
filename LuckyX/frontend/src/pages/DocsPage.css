@@ -1,0 +1,217 @@
+/* General App Styles */
+.App {
+  text-align: center;
+}
+
+.navbar {
+  background-color: #1a2b21;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.navbar ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 20px;
+}
+
+.navbar li {
+  display: inline;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #d4af37; /* Gold color */
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.navbar a:hover {
+  color: #fff; /* White on hover */
+  text-shadow: 0px 0px 3px #d4af37; /* Glow effect */
+}
+
+.fullscreen-background {
+  background-color: #1a2b21; /* Dark green background */
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
+  display: flex; /* Use Flexbox */
+  flex-direction: column; /* Stack content vertically */
+  justify-content: flex-start; /* Align items to the top */
+  align-items: center; /* Center items horizontally */
+  padding-top: 50px; /* Adjust this to position the logo vertically */
+  gap: 20px; /* Add spacing between the logo and text */
+}
+
+.logo {
+  width: 50%; /* Adjust size */
+  max-width: 600px; /* Limit the maximum width */
+  height: auto; /* Maintain aspect ratio */
+}
+
+.gold-text {
+  color: #d4af37; /* Gold color */
+  font-weight: bold; /* Optional: Make the text bold */
+  text-shadow: 1px 1px 2px #000; /* Add a shadow for contrast */
+  text-align: center; /* Center the text below the logo */
+  font-size: 20px; /* Adjust font size */
+  margin: 0 20px; /* Add side margins for better spacing */
+}
+
+.gold-text-left {
+  color: #d4af37; /* Gold color */
+  font-weight: bold; /* Optional: Make the text bold */
+  text-shadow: 1px 1px 2px #000; /* Add a shadow for contrast */
+  text-align: left; /* Center the text below the logo */
+  font-size: 20px; /* Adjust font size */
+  margin: 0 20px; /* Add side margins for better spacing */
+}
+
+.gold-text ul {
+  list-style: none; /* Remove bullet points */
+  padding: 0; /* Remove default padding */
+}
+
+.gold-text li {
+  margin-bottom: 10px; /* Add spacing between list items */
+}
+
+/* Main Layout Styling */
+.main-layout {
+  display: flex; /* Use Flexbox for layout */
+  flex-direction: column; /* Stack content vertically */
+  gap: 20px; /* Add spacing between sections */
+  padding: 20px; /* Add padding around the layout */
+}
+
+/* Connect Wallet Button */
+.connect-wallet-button {
+  position: absolute; /* Position relative to the fullscreen container */
+  top: 20px; /* Distance from the top */
+  right: 20px; /* Distance from the right */
+  padding: 10px 20px; /* Add padding for the button */
+  background-color: #d4af37; /* Golden color matching the logo */
+  color: white; /* Text color */
+  border: none; /* Remove borders */
+  border-radius: 5px; /* Rounded corners */
+  font-size: 20px; /* Adjust font size */
+  cursor: pointer; /* Pointer cursor on hover */
+  z-index: 10; /* Ensure the button is above other content */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.connect-wallet-button:hover {
+  background-color: #3a4a31; /* Slightly lighter for hover */
+  transform: scale(1.05); /* Slightly enlarge the button */
+}
+
+/* Wallet Info Section */
+.wallet-info {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  text-align: left;
+  font-size: 18px; /* Slightly smaller font size for better readability */
+  max-width: 300px; /* Limit width for addresses */
+  word-wrap: break-word; /* Ensure long text like addresses wraps neatly */
+  overflow-wrap: break-word; /* Break words if necessary */
+  line-height: 1.4; /* Increase line spacing for better readability */
+  margin: 0;
+  padding: 10px; /* Add some padding around the text */
+  color: #d4af37; /* Gold color */
+  font-weight: bold;
+  text-shadow: 1px 1px 2px #000; /* Add subtle shadow for contrast */
+  background-color: #1a2b21; /* Dark green background */
+  border-radius: 8px; /* Rounded corners for the box */
+}
+
+/* Responsive Design for Smaller Screens */
+@media (max-width: 768px) {
+  .wallet-info {
+    font-size: 16px; /* Reduce font size further on smaller screens */
+    max-width: 90%; /* Allow more room for text on smaller screens */
+    right: 10px; /* Reduce right spacing */
+  }
+}
+/* Left Section */
+.left-section {
+  position: absolute; /* Position relative to the fullscreen background */
+  top: 50%; /* Center vertically */
+  left: 20px; /* Align to the left edge with some spacing */
+  transform: translateY(-50%); /* Adjust for perfect vertical centering */
+  display: flex; /* Use Flexbox for layout */
+  flex-direction: column; /* Stack buttons vertically */
+  gap: 20px; /* Add spacing between buttons */
+}
+
+.right-section {
+  flex: 1; /* Takes up equal space */
+  padding: 20px;
+}
+
+/* Deposit Container */
+.deposit-container {
+  display: flex; /* Ensures the input and button are aligned */
+  justify-content: center; /* Centers both horizontally */
+  align-items: center; /* Centers vertically */
+  gap: 15px; /* Adds spacing between the input and button */
+  margin-top: 20px; /* Adds some space above the container */
+}
+/* Deposit Input */
+.deposit-input {
+  width: 200px; /* Width of the input box */
+  height: 40px; /* Same height as the button */
+  padding: 8px; /* Inner spacing for the text */
+  font-size: 16px; /* Same font size as the button */
+  border: 1px solid #ccc; /* Subtle border */
+  border-radius: 5px; /* Rounded corners */
+  box-sizing: border-box; /* Include padding and border in height/width */
+}
+
+/* Deposit Button */
+.deposit-button {
+  height: 40px; /* Same height as the input */
+  padding: 0 20px; /* Adjust padding for width */
+  font-size: 16px; /* Same font size as the input */
+  background-color: #d4af37; /* Golden background */
+  color: white; /* White text */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor for interactivity */
+  box-sizing: border-box; /* Include padding and border in height/width */
+}
+
+.deposit-button:hover {
+  background-color: #b38e2d; /* Slightly darker shade for hover */
+}
+
+/* Claim Button */
+.claim-button {
+  padding: 10px 20px;
+  font-size: 20px;
+  background-color: #d4af37; /* Golden color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.claim-button:hover {
+  background-color: #3a4a31; /* Slightly lighter for hover */
+  transform: scale(1.05); /* Slightly enlarge the button */
+}
+
+@media (max-width: 768px) {
+  .fullscreen-background {
+    background-size: cover; /* Switch to cover for smaller screens */
+  }
+}
+
+@media (min-width: 1920px) {
+  .fullscreen-background {
+    background-size: contain; /* Maintain aspect ratio for larger screens */
+  }
+}

@@ -1,0 +1,45 @@
+.wallet-connect {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.wallet-info {
+  margin-top: 10px; /* Space between button and info */
+  width: 100%; /* Ensure consistent width */
+  max-width: 300px; /* Optional: Limit the width */
+  word-wrap: break-word; /* Wrap text for long wallet addresses */
+  text-align: left; /* Align the text to the left if needed */
+}
+
+.connect-wallet-button,
+.disconnect-wallet-button {
+  width: 200px; /* Fixed width for consistent button size */
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.connect-wallet-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.disconnect-wallet-button {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+}
+
+.connect-wallet-button:hover {
+  background-color: #0056b3;
+}
+
+.disconnect-wallet-button:hover {
+  background-color: #d9363e;
+}

@@ -1,0 +1,256 @@
+/* General App Styles */
+.App {
+  background: linear-gradient(120deg, #2a2a72, #009ffd);
+  padding: 20px;
+  text-align: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  color: #fff;
+}
+
+.info-card {
+  background: rgba(255, 255, 255, 0.1); /* Transparent box */
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  text-align: left; /* Align text for better readability */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Optional border */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.info-card h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.info-card p {
+  margin: 10px 0;
+}
+
+.info-card ul {
+  list-style: disc;
+  margin-left: 20px; /* Indent list items */
+}
+
+.info-card strong {
+  font-weight: 600; /* Emphasize key labels */
+  color: #ffd700; /* Gold for consistency */
+}
+
+.important-text {
+  color: #ffd700; /* Gold color */
+  font-weight: 700;
+}
+
+.highlight {
+  color: #ff5733; /* Optional secondary color */
+  font-weight: 600;
+}
+
+.card {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(0, 0, 0, 0.1)
+  ); /* Subtle gradient */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a soft shadow */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Border for definition */
+  border-radius: 12px; /* Smoothen corners further */
+  padding: 20px;
+  margin: 15px;
+}
+
+.card h4 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.card p,
+.card ul {
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
+  transform: translateY(-5px); /* Slight lift effect */
+  transition: all 0.3s ease;
+}
+.previous-auction-rounds {
+  background: rgba(255, 255, 255, 0.1); /* Transparent background */
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  overflow-x: auto; /* Enable horizontal scrolling for smaller screens */
+}
+
+.previous-auction-rounds h3 {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.previous-auction-rounds table {
+  width: 100%;
+  border-collapse: collapse; /* Remove default spacing between table cells */
+  margin-top: 10px;
+  min-width: 600px; /* Ensure the table maintains structure on smaller devices */
+}
+
+.previous-auction-rounds th,
+.previous-auction-rounds td {
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Light border for cells */
+  padding: 10px;
+  text-align: center; /* Center-align text */
+  font-size: 1rem;
+  color: #fff;
+}
+
+.previous-auction-rounds th {
+  background: rgba(
+    255,
+    255,
+    255,
+    0.2
+  ); /* Slightly darker background for headers */
+  font-weight: 600;
+  text-transform: uppercase; /* Capitalize headers */
+}
+
+.previous-auction-rounds tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.05); /* Subtle background for even rows */
+}
+
+.previous-auction-rounds tbody tr:hover {
+  background: rgba(255, 255, 255, 0.1); /* Highlight row on hover */
+  transition: background 0.3s ease;
+}
+
+/* Action Container (Approve & Claim Buttons) */
+.action-container {
+  display: flex;
+  flex-wrap: wrap; /* Ensure it adjusts on smaller screens */
+  justify-content: center;
+  align-items: center;
+  gap: 10px; /* Space between input and buttons */
+  margin-top: 20px;
+}
+
+.action-input {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  outline: none;
+  width: 150px;
+  text-align: center;
+}
+
+.action-input::placeholder {
+  color: rgba(255, 255, 255, 0.5); /* Light placeholder color */
+}
+
+.action-button {
+  background-color: #ffd700;
+  color: #111;
+  font-size: 1.2rem; /* Increase font size */
+  font-weight: 700; /* Bold text */
+  padding: 15px 30px; /* Add more padding */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.action-button:hover {
+  background-color: #ffc107;
+  transform: scale(1.05); /* Slight zoom effect */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+/* Token Info Section */
+.token-info_auction {
+  margin-bottom: 30px;
+}
+
+.token-info_auction h4 {
+  margin: 10px 0;
+  font-size: 1.2rem;
+  color: #ffd700;
+}
+
+/* Statistics Section */
+.statistics_auction {
+  background-color: rgba(255, 215, 0, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #ffd700;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.statistics_auction h4 {
+  margin: 10px 0;
+  font-size: 1rem;
+  color: #fff;
+}
+
+/* Wallet Section */
+.wallet-section_auction {
+  text-align: center;
+}
+
+.wallet-info_auction p {
+  margin: 5px 0;
+}
+
+.connect-button_auction {
+  margin-bottom: 20px;
+}
+
+.disconnect-button_auction {
+  margin-top: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .statistics_auction,
+  .user-stats_auction {
+    text-align: center;
+  }
+
+  h4 {
+    font-size: 0.9rem;
+  }
+
+  button {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo_auction {
+    width: 100px;
+  }
+
+  h4 {
+    font-size: 0.8rem;
+  }
+
+  button {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+}

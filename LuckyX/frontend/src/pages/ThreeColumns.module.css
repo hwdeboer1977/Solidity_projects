@@ -1,0 +1,31 @@
+/* Reset and base styles */
+:root {
+  --gap: 10px; /* Define reusable gap size for spacing */
+}
+
+.container {
+  display: flex; /* Use flexbox for layout */
+  flex-wrap: wrap; /* Allow columns to wrap on smaller screens */
+  gap: var(--gap); /* Space between columns */
+  padding: var(--gap); /* Add some padding around the container */
+}
+
+.column {
+  flex: 1; /* Allow each column to take equal space */
+  min-width: calc(
+    33.33% - var(--gap)
+  ); /* Calculate width for 3 columns with gap */
+  background-color: rgba(255, 215, 0, 0.1);
+  padding: 16px; /* Add padding inside the columns */
+  text-align: center; /* Center text for better presentation */
+  border: 1px solid #ddd; /* Optional: Add a border for visual distinction */
+  border-radius: 4px; /* Optional: Add rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add subtle shadow */
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .column {
+    min-width: 100%; /* Full width for smaller screens */
+  }
+}

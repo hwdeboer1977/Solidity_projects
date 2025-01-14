@@ -1,0 +1,88 @@
+.fullscreen-background {
+  padding: 20px;
+}
+
+/* Parent container with horizontal layout */
+.grid-container {
+  display: flex; /* Use Flexbox for horizontal alignment */
+  gap: 200px; /* Add space between the sections */
+  justify-content: space-between; /* Distribute space evenly */
+  align-items: flex-start; /* Align items at the top */
+  padding: 20px; /* Add padding around the container */
+}
+
+/* Individual sections */
+.left-box,
+.middle-box,
+.right-box {
+  flex: 1; /* All sections take equal space */
+  padding: 10px; /* Inner spacing */
+  text-align: left; /* Align text to the left */
+  background-color: transparent; /* Transparent background (no "box" look) */
+  border: none; /* Remove borders */
+  box-shadow: none; /* Remove shadows */
+}
+
+.image-container {
+  position: relative; /* Set relative positioning for the container */
+  display: inline-block; /* Ensure the container wraps the image tightly */
+  width: fit-content; /* Container size adjusts to image */
+}
+
+.info-user {
+  background-color: #1a2b21;
+  padding: 10px 20px; /* Add padding inside the box */
+  border-radius: 10px; /* Rounded corners for a cleaner look */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  width: 100%; /* Adjust to full width of parent */
+  max-width: 400px; /* Prevent it from becoming too wide */
+  text-align: left; /* Align text to the left */
+  font-size: 1rem; /* Adjust font size for readability */
+}
+
+.diagram-image {
+  width: 500px; /* Adjust the image size as needed */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 5px; /* Optional: Rounded corners */
+  display: block; /* Ensure the image stays within the container */
+}
+
+.mint-button {
+  position: absolute; /* Position the button relative to the container */
+  top: 120px; /* Distance from the top of the image */
+  left: 190px; /* Distance from the left of the image */
+  background-color: #007bff; /* Blue background */
+  color: white; /* White text */
+  padding: 10px 20px; /* Button size */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 16px; /* Font size */
+  font-weight: bold; /* Bold text */
+  width: 100px;
+  height: 60px;
+}
+
+.redeem-button {
+  position: absolute; /* Position the button relative to the container */
+  bottom: 40px; /* Distance from the bottom of the image */
+  left: 190px; /* Distance from the left of the image */
+  background-color: #ff4d4f; /* Red background */
+  color: white; /* White text */
+  padding: 10px 20px; /* Button size */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 16px; /* Font size */
+  font-weight: bold; /* Bold text */
+  width: 100px;
+  height: 60px;
+}
+
+.mint-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.redeem-button:hover {
+  background-color: #d9363e; /* Darker red on hover */
+}

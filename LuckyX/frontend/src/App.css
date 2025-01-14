@@ -1,0 +1,168 @@
+/* General App Styles */
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Tablet and Larger Screens */
+@media (min-width: 768px) {
+  main {
+    padding: 40px;
+  }
+}
+
+.logo_auction_app {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+/* Navbar Styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: linear-gradient(
+    120deg,
+    #2a2a72,
+    #009ffd
+  ); /* Same as body gradient */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Optional light border */
+  padding: 15px 20px;
+  position: sticky; /* Ensure navbar stays on top */
+  top: 0;
+  z-index: 100; /* Keep it above other content */
+}
+
+.navbar-container {
+  display: flex;
+  width: 100%;
+}
+
+.navbar-links {
+  display: flex;
+  list-style-type: none;
+  gap: 15px;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease; /* Smooth hover transition */
+}
+
+.nav-button:hover {
+  background-color: #ffd700;
+  color: #111;
+  border-radius: 5px;
+  padding: 5px 10px;
+  transform: scale(1.1); /* Slight zoom effect */
+}
+
+/* Mobile View: Hamburger Menu */
+.hamburger-menu {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .hamburger-menu {
+    display: block;
+  }
+
+  .navbar-links {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #282c34;
+    padding: 10px;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+  }
+
+  .navbar-links.active {
+    display: flex;
+  }
+}
+
+.fullscreen-background {
+  background-color: #1a2b21; /* Dark green background */
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
+  display: flex; /* Use Flexbox */
+  flex-direction: column; /* Stack content vertically */
+  justify-content: flex-start; /* Align items to the top */
+  align-items: center; /* Center items horizontally */
+  padding-top: 50px; /* Adjust this to position the logo vertically */
+  gap: 20px; /* Add spacing between the logo and text */
+}
+
+.logo {
+  width: 50%; /* Adjust size */
+  max-width: 600px; /* Limit the maximum width */
+  height: auto; /* Maintain aspect ratio */
+}
+
+@media (max-width: 768px) {
+  .fullscreen-background {
+    background-size: cover; /* Switch to cover for smaller screens */
+  }
+}
+
+@media (min-width: 1920px) {
+  .fullscreen-background {
+    background-size: contain; /* Maintain aspect ratio for larger screens */
+  }
+}
+
+/* Navbar Improvements */
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.navbar a:hover {
+  background-color: #ffd700;
+  color: #111;
+  transform: scale(1.1); /* Slight zoom effect */
+}
+
+button {
+  background-color: #ffd700;
+  color: #111;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #ffc107;
+  transform: scale(1.05); /* Slight zoom on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a soft shadow */
+}
