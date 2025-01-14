@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect } from "react";
 import { ethers } from "ethers";
 // Import the ABI (assuming you have the Auction ABI locally, or you can manually copy it from your Hardhat artifacts)
 import AuctionABI from "./pages/Auction.json"; // Correct import path now
+import ERC20_ABI from "./pages/ERC20.json"; // Correct import path now
 
 export const WalletContext = createContext();
 
@@ -18,21 +19,6 @@ export const WalletProvider = ({ children }) => {
   const inputTokenAddress = "0x23Cd660055157fA8997f85D65F4e91A0d5FebC32";
   const luckyxAddress = "0xa6D4E6f25849529ce8Ef15f1c12Ae1DeBb62F1Dd";
   const auctionAddress = "0xEb9Ed228Dca0ebfD6122415c1Db9eA0aaD27a6c8";
-
-  const ERC20_ABI = [
-    // balanceOf function
-    "function balanceOf(address account) view returns (uint256)",
-    "function approve(address spender, uint256 amount) returns (bool)",
-  ];
-
-  const SUPPORTED_NETWORKS = {
-    11155111: {
-      // Sepolia
-      inputTokenAddress: "0xA6d6b4CcE63aC6778508c2277315e4173a1eF063",
-      luckyxAddress: "0x7A796Ec4cb2fc5226b82976cCdd1eBbfD5C6B5b5",
-      auctionAddress: "0x7F36B4fb45Fb834EE4A41Cb9E531d3049B58b105",
-    },
-  };
 
   const connectWallet = async () => {
     if (window.ethereum) {
@@ -204,7 +190,7 @@ export const WalletProvider = ({ children }) => {
         window.ethereum.removeListener("chainChanged", handleChainChanged);
       };
     }
-  }, []);
+  }, [walletAddress, chainId]);
 
   return (
     <WalletContext.Provider

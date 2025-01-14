@@ -2,46 +2,22 @@ import "../App.css";
 import "./AuctionPage.css";
 import React, { useContext, useEffect, useState } from "react";
 import { ethers } from "ethers";
-import Countdown from "./Countdown"; // Import the Countdown component
-//import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import styles from "./ThreeColumns.module.css"; // Import CSS module
 import { WalletContext } from "../WalletContext";
 
-// Import the ABI (assuming you have the Auction ABI locally, or you can manually copy it from your Hardhat artifacts)
-import AuctionABI from "./Auction.json"; // Correct import path now
-
 const SUPPORTED_CHAINS = [11155111]; // Add supported chain IDs (e.g., Sepolia)
-
-const ERC20_ABI = [
-  // balanceOf function
-  "function balanceOf(address account) view returns (uint256)",
-  "function approve(address spender, uint256 amount) returns (bool)",
-];
 
 function AuctionPage() {
   /* Initialize state variables */
-  const [userAddress, setUserAddress] = useState(null);
-  //const [provider, setProvider] = useState(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [networkName, setNetworkName] = useState("");
-  //const [chainId, setChainId] = useState(null);
-  const [message, setMessage] = useState("");
-  const [balance, setBalance] = useState(null);
-  const [signer, setSigner] = useState(null);
-  //const [auctionContract, setAuctionContract] = useState(null);
-  const [timeRemaining, setTimeRemaining] = useState(null);
+
   const [currentRound, setCurrentRound] = useState(null);
   const [luckyXBalance, setLuckyXBalance] = useState(null);
   const [inputTokenBalance, setInputTokenBalance] = useState(null);
-  //const [inputTokenContract, setInputTokenContract] = useState(null);
-  //const [luckYTokenContract, setLuckyTokenXContract] = useState(null);
   const [expectedLuckyX, setExpectedLuckyX] = useState(null);
   const [depositAmountUserRound, setDepositAmountUserRound] = useState("");
   const [depositAmountTotalRound, setDepositAmountTotalRound] = useState("");
   const [depositAmount, setDepositAmount] = useState("");
   const [claimableRounds, setClaimableRounds] = useState([]);
-  const [totalClaimableTokens, setTotalClaimableTokens] = useState(0);
-  //const [nativeBalance, setNativeBalance] = useState("");
   const [currentRoundEndTime, setCurrentRoundEndTime] = useState(null);
   const [formattedTime, setFormattedTime] = useState("00:00:00");
 
@@ -56,8 +32,6 @@ function AuctionPage() {
     inputTokenContract,
     auctionAddress,
   } = useContext(WalletContext);
-
-  const [auctionData, setAuctionData] = useState(null);
 
   // useEffect(() => {
   //   console.log("Wallet Address:", walletAddress);
@@ -197,7 +171,6 @@ function AuctionPage() {
       const interval = setInterval(() => {
         const now = Math.floor(Date.now() / 1000); // Current time in seconds
         const remaining = Math.max(currentRoundEndTime - now, 0);
-        setTimeRemaining(remaining);
         setFormattedTime(formatTime(remaining)); // Format remaining time
 
         if (remaining === 0) {
@@ -333,7 +306,6 @@ function AuctionPage() {
     try {
       const currentRound = await auctionContract.currentRound(); // Fetch current round
       const allRounds = [];
-      let totalTokens = 0;
 
       for (let round = 0; round < currentRound; round++) {
         const userDeposit = await auctionContract.userDeposits(
@@ -361,13 +333,9 @@ function AuctionPage() {
         });
 
         // Add to total tokens only if not claimed
-        if (!claimed) {
-          totalTokens += parseFloat(ethers.utils.formatEther(toClaim));
-        }
       }
 
       setClaimableRounds(allRounds); // Set all rounds (claimed and unclaimed)
-      setTotalClaimableTokens(totalTokens.toFixed(2)); // Format total claimable tokens for display
     } catch (error) {
       console.error("Error fetching claimable rounds:", error);
     }

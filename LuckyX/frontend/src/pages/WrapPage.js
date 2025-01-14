@@ -1,25 +1,14 @@
-import React, { useEffect, useState } from "react";
+//import React, { useContext, useEffect, useState } from "react";
+import React from "react";
 import "./WrapPage.css"; // Loaded first
 import "./WalletConnect.css"; // Loaded second, overrides wrappage.css if selectors are equally specific
 import LuckyX from "./LuckyX.png"; // Adjust the path to your image
-import WalletConnect from "./WalletConnect";
+//import { WalletContext } from "../WalletContext";
 
 function WrapPage() {
-  const [userAddress, setUserAddress] = useState(null);
-  const [chainId, setUserChainId] = useState(null);
-
-  const handleWalletConnected = ({ address, chainId }) => {
-    console.log("Wallet connected with address:", address);
-    console.log("Connected on chain ID:", chainId);
-    setUserAddress(address);
-    setUserChainId(chainId);
-  };
-
-  const handleWalletDisconnected = () => {
-    console.log("Wallet disconnected");
-    setUserAddress(null);
-    setUserChainId(null);
-  };
+  // // Retrieve this information from WalletContect (avaiable in all subpages)
+  // const { walletAddress, chainId, provider, nativeBalance } =
+  //   useContext(WalletContext);
 
   return (
     <div className="grid-container">
@@ -58,12 +47,7 @@ function WrapPage() {
 
       <div className="right-box">
         {/* Wallet Connect Section */}
-        <div className="wallet-connect-container">
-          <WalletConnect
-            onWalletConnected={handleWalletConnected}
-            onWalletDisconnected={handleWalletDisconnected}
-          />
-        </div>
+        <div className="wallet-connect-container"></div>
       </div>
     </div>
   );
