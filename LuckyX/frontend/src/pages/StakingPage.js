@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDroplet,
@@ -6,27 +6,10 @@ import {
   faRecycle,
 } from "@fortawesome/free-solid-svg-icons";
 import Treasury from "./treasury.png"; // Adjust the path to your image
-import WalletConnect from "./WalletConnect";
 import "./StakingPage.css"; // Loaded first
 import "./WalletConnect.css"; // Loaded second, overrides wrappage.css if selectors are equally specific
 
 const StakingPage = () => {
-  const [userAddress, setUserAddress] = useState(null);
-  const [chainId, setUserChainId] = useState(null);
-
-  const handleWalletConnected = ({ address, chainId }) => {
-    console.log("Wallet connected with address:", address);
-    console.log("Connected on chain ID:", chainId);
-    setUserAddress(address);
-    setUserChainId(chainId);
-  };
-
-  const handleWalletDisconnected = () => {
-    console.log("Wallet disconnected");
-    setUserAddress(null);
-    setUserChainId(null);
-  };
-
   const iconTextStyle = {
     color: "#333333", // Replace with your desired color
     textAlign: "center",
@@ -101,12 +84,7 @@ const StakingPage = () => {
           <h1 style={winnerTextStyle}>And the winner is?</h1>
         </div>
         {/* Wallet Connect Section */}
-        <div className="wallet-connect-container">
-          <WalletConnect
-            onWalletConnected={handleWalletConnected}
-            onWalletDisconnected={handleWalletDisconnected}
-          />
-        </div>
+        <div className="wallet-connect-container"></div>
       </div>
     </div>
   );
@@ -138,12 +116,6 @@ const cardStyle = {
   padding: "20px",
   borderRadius: "10px",
   boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-};
-
-const iconTextStyle = {
-  display: "flex",
-  alignItems: "flex-start",
-  gap: "15px",
 };
 
 const imageContainerStyle = {
