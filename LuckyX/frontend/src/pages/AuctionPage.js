@@ -144,7 +144,8 @@ function AuctionPage() {
 
   // WebSocket to get currentRound and currentRoundEndTime
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080");
+    //const ws = new WebSocket("ws://localhost:8080");
+    const ws = new WebSocket("wss://solidity-projects.onrender.com");
 
     ws.onopen = () => {
       console.log("Connected to WebSocket server");
