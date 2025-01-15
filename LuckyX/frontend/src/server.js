@@ -11,6 +11,7 @@ const PRIVATE_KEY = process.env.WALLET_SECRET;
 const auctionAddress = "0xEb9Ed228Dca0ebfD6122415c1Db9eA0aaD27a6c8";
 const AuctionABI = require("./pages/Auction.json");
 
+const express = require("express");
 const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
 const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
 const contractAuction = new ethers.Contract(auctionAddress, AuctionABI, wallet);
@@ -91,6 +92,11 @@ wss.on("connection", (ws) => {
   ws.on("close", () => {
     console.log("Client disconnected");
   });
+});
+
+// Add a root route to handle GET /
+app.get("/", (req, res) => {
+  res.send("Server is running and ready for WebSocket connections.");
 });
 
 const PORT = 8080;
