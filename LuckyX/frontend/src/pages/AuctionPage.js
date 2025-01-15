@@ -341,11 +341,13 @@ function AuctionPage() {
           ? 0
           : userDeposit.mul(1000).div(roundTotalDeposits).toString();
 
+        //console.log("toClaim: ", toClaim);
+
         allRounds.push({
           round,
           totalDeposited: ethers.utils.formatEther(roundTotalDeposits),
           yourDeposit: ethers.utils.formatEther(userDeposit),
-          toClaim: claimed ? 0 : ethers.utils.formatEther(toClaim),
+          toClaim: claimed ? 0 : toClaim,
           claimed,
         });
 
