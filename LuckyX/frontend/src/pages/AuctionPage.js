@@ -21,6 +21,8 @@ function AuctionPage() {
   const [currentRoundEndTime, setCurrentRoundEndTime] = useState(null);
   const [formattedTime, setFormattedTime] = useState("00:00:00");
 
+  const duration = 24 * 60 * 60;
+
   // Retrieve this information from WalletContect (avaiable in all subpages)
   const {
     walletAddress,
@@ -142,35 +144,28 @@ function AuctionPage() {
     }
   }, [chainId]); // Run this effect whenever the chainId changes
 
-  // WebSocket to get currentRound and currentRoundEndTime
-  useEffect(() => {
-    //const ws = new WebSocket("ws://localhost:8080");
-    const ws = new WebSocket("wss://solidity-projects.onrender.com");
+  // Function to fetch round info: round number and remaining time
+  const getRoundInfo = useCallback(async () => {
+    try {
+      // Get start time of the round
+      const startTimeRoundHex = await auctionContract.startTimeCurrentRound();
+      const startTimeRound = startTimeRoundHex.toNumber();
 
-    ws.onopen = () => {
-      console.log("Connected to WebSocket server");
-    };
+      // Log start time for debugging
+      console.log("startTimeRound (as number):", startTimeRound);
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("WebSocket data received:", data);
+      // Calculate the end time
+      const endTimeRound = startTimeRound + duration;
+      console.log("endTimeRound (as number):", endTimeRound);
 
-      setCurrentRound(data.currentRound);
-      setCurrentRoundEndTime(data.currentRoundEndTime); // Fixed end time
-    };
+      // Update the end time in state
+      setCurrentRoundEndTime(endTimeRound);
+    } catch (error) {
+      console.error("Error during getting time:", error);
+    }
+  }, [auctionContract, duration]); // Dependencies: Recompute only if these change
 
-    ws.onclose = () => {
-      console.log("Disconnected from WebSocket server");
-    };
-
-    ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    return () => ws.close(); // Cleanup WebSocket on component unmount
-  }, []);
-
-  // Convert seconds in following format: hours, minutes, seconds
+  // Function to format time in HH:mm:ss
   const formatTime = (totalSeconds) => {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -182,22 +177,90 @@ function AuctionPage() {
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
   };
 
-  // Real-time countdown
+  // Fetch round info on mount and periodically every 20 seconds
+  useEffect(() => {
+    getRoundInfo(); // Initial fetch
+    const pollInterval = setInterval(getRoundInfo, 20000); // Poll every 20 seconds
+
+    return () => clearInterval(pollInterval); // Cleanup on component unmount
+  }, [auctionContract, duration, getRoundInfo]);
+
+  // Real-time countdown logic
   useEffect(() => {
     if (currentRoundEndTime !== null) {
       const interval = setInterval(() => {
         const now = Math.floor(Date.now() / 1000); // Current time in seconds
-        const remaining = Math.max(currentRoundEndTime - now, 0);
-        setFormattedTime(formatTime(remaining)); // Format remaining time
+        const remaining = Math.max(currentRoundEndTime - now, 0); // Prevent negative values
 
+        // Update the formatted time
+        setFormattedTime(formatTime(remaining));
+
+        // Stop the countdown if time reaches zero
         if (remaining === 0) {
-          clearInterval(interval); // Stop countdown at 0
+          clearInterval(interval);
         }
-      }, 1000);
+      }, 1000); // Update every second
 
-      return () => clearInterval(interval); // Cleanup on component unmount or endTime change
+      return () => clearInterval(interval); // Cleanup on component unmount or when endTime changes
     }
   }, [currentRoundEndTime]);
+
+  // WebSocket to get currentRound and currentRoundEndTime
+  // useEffect(() => {
+  //   const ws = new WebSocket("ws://localhost:8080");
+  //   //const ws = new WebSocket("wss://solidity-projects.onrender.com");
+
+  //   ws.onopen = () => {
+  //     console.log("Connected to WebSocket server");
+  //   };
+
+  //   ws.onmessage = (event) => {
+  //     const data = JSON.parse(event.data);
+  //     console.log("WebSocket data received:", data);
+
+  //     setCurrentRound(data.currentRound);
+  //     setCurrentRoundEndTime(data.currentRoundEndTime); // Fixed end time
+  //   };
+
+  //   ws.onclose = () => {
+  //     console.log("Disconnected from WebSocket server");
+  //   };
+
+  //   ws.onerror = (error) => {
+  //     console.error("WebSocket error:", error);
+  //   };
+
+  //   return () => ws.close(); // Cleanup WebSocket on component unmount
+  // }, []);
+
+  // // Convert seconds in following format: hours, minutes, seconds
+  // const formatTime = (totalSeconds) => {
+  //   const hours = Math.floor(totalSeconds / 3600);
+  //   const minutes = Math.floor((totalSeconds % 3600) / 60);
+  //   const seconds = totalSeconds % 60;
+
+  //   // Pad single-digit values with a leading zero
+  //   const pad = (num) => String(num).padStart(2, "0");
+
+  //   return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+  // };
+
+  // // Real-time countdown
+  // useEffect(() => {
+  //   if (currentRoundEndTime !== null) {
+  //     const interval = setInterval(() => {
+  //       const now = Math.floor(Date.now() / 1000); // Current time in seconds
+  //       const remaining = Math.max(currentRoundEndTime - now, 0);
+  //       setFormattedTime(formatTime(remaining)); // Format remaining time
+
+  //       if (remaining === 0) {
+  //         clearInterval(interval); // Stop countdown at 0
+  //       }
+  //     }, 1000);
+
+  //     return () => clearInterval(interval); // Cleanup on component unmount or endTime change
+  //   }
+  // }, [currentRoundEndTime]);
 
   const handleApprove = async () => {
     try {
