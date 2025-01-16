@@ -177,6 +177,35 @@ function AuctionPage() {
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
   };
 
+  // Function to call updateCurrentRound after validating timeRemaining
+  const updateCurrentRoundWithValidation = useCallback(async () => {
+    try {
+      // Check blockchain time remaining
+      const timeRemainingHex = await auctionContract.getTimeRemaining();
+      const timeRemaining = timeRemainingHex.toNumber();
+
+      if (timeRemaining === 0) {
+        console.log(
+          "Blockchain confirms time is zero. Calling updateCurrentRound..."
+        );
+        const tx = await auctionContract.updateCurrentRound();
+        console.log("Transaction sent:", tx.hash);
+
+        await tx.wait();
+        console.log("Round updated successfully.");
+
+        // Fetch the updated round info after calling the function
+        await getRoundInfo();
+      } else {
+        console.log(
+          `Time remaining on blockchain: ${timeRemaining} seconds. Skipping update.`
+        );
+      }
+    } catch (error) {
+      console.error("Error validating or updating current round:", error);
+    }
+  }, [auctionContract, getRoundInfo]);
+
   // Fetch round info on mount and periodically every 20 seconds
   useEffect(() => {
     getRoundInfo(); // Initial fetch
@@ -198,12 +227,13 @@ function AuctionPage() {
         // Stop the countdown if time reaches zero
         if (remaining === 0) {
           clearInterval(interval);
+          updateCurrentRoundWithValidation(); // Validate before updating
         }
       }, 1000); // Update every second
 
       return () => clearInterval(interval); // Cleanup on component unmount or when endTime changes
     }
-  }, [currentRoundEndTime]);
+  }, [currentRoundEndTime, updateCurrentRoundWithValidation]);
 
   // WebSocket to get currentRound and currentRoundEndTime
   // useEffect(() => {
