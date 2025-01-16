@@ -399,7 +399,18 @@ function AuctionPage() {
 
     try {
       // Trigger the claim transaction
-      const claimTx = await auctionContract.amountToClaim(walletAddress, round);
+      console.log("round:", round);
+      //const claimTx = await auctionContract.amountToClaim(walletAddress, round);
+
+      // Call the claim function with manual gas limit
+      const claimTx = await auctionContract.amountToClaim(
+        walletAddress,
+        round,
+        {
+          gasLimit: ethers.BigNumber.from("200000"), // Adjust gas limit as needed
+        }
+      );
+
       const receipt = await claimTx.wait();
       console.log(`Claim successful for round ${round}:`, receipt);
       alert(`Successfully claimed tokens for round ${round}`);
