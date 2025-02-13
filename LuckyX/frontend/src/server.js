@@ -2,14 +2,16 @@ const { ethers } = require("ethers");
 const WebSocket = require("ws");
 const http = require("http");
 require("dotenv").config({
-  path: "C:\\Users\\hwdeb\\Documents\\auction\\.env",
+  path: "C:\\Users\\hwdeb\\Documents\\blockstat_solutions_work\\Solidity_projects\\LuckyX\\.env",
 });
 
 const RPC_URL = process.env.ALCHEMY_API_SEPOLIA;
 const PRIVATE_KEY = process.env.WALLET_SECRET;
 
-const auctionAddress = "0xEb9Ed228Dca0ebfD6122415c1Db9eA0aaD27a6c8";
+//const auctionAddress = process.env.AUCTION_ADDRESS;
+const auctionAddress = "0x1AbB8C31Cc06759bEeB07184a0DF9A0Ce11CbA9c";
 const AuctionABI = require("./pages/Auction.json");
+console.log(auctionAddress);
 
 const express = require("express");
 const provider = new ethers.providers.JsonRpcProvider(RPC_URL);

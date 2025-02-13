@@ -19,10 +19,7 @@ function AuctionPage() {
   const [depositAmount, setDepositAmount] = useState("");
   const [claimableRounds, setClaimableRounds] = useState([]);
   const [currentRoundEndTime, setCurrentRoundEndTime] = useState(null);
-  const [duration, setDuration] = useState(null);
   const [formattedTime, setFormattedTime] = useState("00:00:00");
-
-  //const duration = 24 * 60 * 60;
 
   // Retrieve this information from WalletContect (avaiable in all subpages)
   const {
@@ -134,10 +131,6 @@ function AuctionPage() {
   ]);
 
   useEffect(() => {
-    console.log("Auction Contract Address:", auctionAddress);
-  }, [auctionAddress]);
-
-  useEffect(() => {
     if (chainId && !SUPPORTED_CHAINS.includes(chainId)) {
       // Unsupported chain: reset UI and alert user
       alert("Chain not supported. Please switch to a supported network.");
@@ -149,33 +142,35 @@ function AuctionPage() {
     }
   }, [chainId]); // Run this effect whenever the chainId changes
 
-  // Function to fetch round info: round number and remaining time
-  const getRoundInfo = useCallback(async () => {
-    try {
-      // Get start time of the round
-      const startTimeRoundHex = await auctionContract.startTimeCurrentRound();
-      const startTimeRound = startTimeRoundHex.toNumber();
+  // WebSocket to get currentRound and currentRoundEndTime
+  useEffect(() => {
+    const ws = new WebSocket("ws://localhost:8080");
+    //const ws = new WebSocket("wss://solidity-projects.onrender.com");
 
-      // Log start time for debugging
-      console.log("startTimeRound (as number):", startTimeRound);
+    ws.onopen = () => {
+      console.log("Connected to WebSocket server");
+    };
 
-      const roundDurationBN = await auctionContract.roundDuration();
-      const roundDuration = roundDurationBN.toNumber(); // Convert BigNumber to number
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("WebSocket data received:", data);
 
-      // Calculate the end time
-      const endTimeRound = startTimeRound + roundDuration;
-      console.log("endTimeRound (as number):", endTimeRound);
-      console.log("roundDuration: ", roundDuration);
+      setCurrentRound(data.currentRound);
+      setCurrentRoundEndTime(data.currentRoundEndTime); // Fixed end time
+    };
 
-      // Update the end time in state
-      setDuration(roundDuration); // Store the correct duration
-      setCurrentRoundEndTime(endTimeRound);
-    } catch (error) {
-      console.error("Error during getting time:", error);
-    }
-  }, [auctionContract]); // Dependencies: Recompute only if these change
+    ws.onclose = () => {
+      console.log("Disconnected from WebSocket server");
+    };
 
-  // Function to format time in HH:mm:ss
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    return () => ws.close(); // Cleanup WebSocket on component unmount
+  }, []);
+
+  // Convert seconds in following format: hours, minutes, seconds
   const formatTime = (totalSeconds) => {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -187,121 +182,22 @@ function AuctionPage() {
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
   };
 
-  // Function to call updateCurrentRound after validating timeRemaining
-  const updateCurrentRoundWithValidation = useCallback(async () => {
-    try {
-      // Check blockchain time remaining
-      const timeRemainingHex = await auctionContract.getTimeRemaining();
-      const timeRemaining = timeRemainingHex.toNumber();
-
-      if (timeRemaining === 0) {
-        console.log(
-          "Blockchain confirms time is zero. Calling updateCurrentRound..."
-        );
-        const tx = await auctionContract.updateCurrentRound();
-        console.log("Transaction sent:", tx.hash);
-
-        await tx.wait();
-        console.log("Round updated successfully.");
-
-        // Fetch the updated round info after calling the function
-        await getRoundInfo();
-      } else {
-        console.log(
-          `Time remaining on blockchain: ${timeRemaining} seconds. Skipping update.`
-        );
-      }
-    } catch (error) {
-      console.error("Error validating or updating current round:", error);
-    }
-  }, [auctionContract, getRoundInfo]);
-
-  // Fetch round info on mount and periodically every 20 seconds
-  useEffect(() => {
-    getRoundInfo(); // Initial fetch
-    const pollInterval = setInterval(getRoundInfo, 20000); // Poll every 20 seconds
-
-    return () => clearInterval(pollInterval); // Cleanup on component unmount
-  }, [auctionContract, duration, getRoundInfo]);
-
-  // Real-time countdown logic
+  // Real-time countdown
   useEffect(() => {
     if (currentRoundEndTime !== null) {
       const interval = setInterval(() => {
         const now = Math.floor(Date.now() / 1000); // Current time in seconds
-        //console.log("currentRoundEndTime: ", currentRoundEndTime);
-        const remaining = Math.max(currentRoundEndTime - now, 0); // Prevent negative values
-        //.log("remaining: ", remaining);
-        // Update the formatted time
-        setFormattedTime(formatTime(remaining));
+        const remaining = Math.max(currentRoundEndTime - now, 0);
+        setFormattedTime(formatTime(remaining)); // Format remaining time
 
-        // Stop the countdown if time reaches zero
         if (remaining === 0) {
-          clearInterval(interval);
-          updateCurrentRoundWithValidation(); // Validate before updating
+          clearInterval(interval); // Stop countdown at 0
         }
-      }, 1000); // Update every second
+      }, 1000);
 
-      return () => clearInterval(interval); // Cleanup on component unmount or when endTime changes
+      return () => clearInterval(interval); // Cleanup on component unmount or endTime change
     }
-  }, [currentRoundEndTime, updateCurrentRoundWithValidation]);
-
-  // WebSocket to get currentRound and currentRoundEndTime
-  // useEffect(() => {
-  //   const ws = new WebSocket("ws://localhost:8080");
-  //   //const ws = new WebSocket("wss://solidity-projects.onrender.com");
-
-  //   ws.onopen = () => {
-  //     console.log("Connected to WebSocket server");
-  //   };
-
-  //   ws.onmessage = (event) => {
-  //     const data = JSON.parse(event.data);
-  //     console.log("WebSocket data received:", data);
-
-  //     setCurrentRound(data.currentRound);
-  //     setCurrentRoundEndTime(data.currentRoundEndTime); // Fixed end time
-  //   };
-
-  //   ws.onclose = () => {
-  //     console.log("Disconnected from WebSocket server");
-  //   };
-
-  //   ws.onerror = (error) => {
-  //     console.error("WebSocket error:", error);
-  //   };
-
-  //   return () => ws.close(); // Cleanup WebSocket on component unmount
-  // }, []);
-
-  // // Convert seconds in following format: hours, minutes, seconds
-  // const formatTime = (totalSeconds) => {
-  //   const hours = Math.floor(totalSeconds / 3600);
-  //   const minutes = Math.floor((totalSeconds % 3600) / 60);
-  //   const seconds = totalSeconds % 60;
-
-  //   // Pad single-digit values with a leading zero
-  //   const pad = (num) => String(num).padStart(2, "0");
-
-  //   return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
-  // };
-
-  // // Real-time countdown
-  // useEffect(() => {
-  //   if (currentRoundEndTime !== null) {
-  //     const interval = setInterval(() => {
-  //       const now = Math.floor(Date.now() / 1000); // Current time in seconds
-  //       const remaining = Math.max(currentRoundEndTime - now, 0);
-  //       setFormattedTime(formatTime(remaining)); // Format remaining time
-
-  //       if (remaining === 0) {
-  //         clearInterval(interval); // Stop countdown at 0
-  //       }
-  //     }, 1000);
-
-  //     return () => clearInterval(interval); // Cleanup on component unmount or endTime change
-  //   }
-  // }, [currentRoundEndTime]);
+  }, [currentRoundEndTime]);
 
   const handleApprove = async () => {
     try {
@@ -410,46 +306,13 @@ function AuctionPage() {
 
     try {
       // Trigger the claim transaction
-      console.log("round:", round);
-      console.log("current round:", currentRound);
-      //const claimTx = await auctionContract.amountToClaim(walletAddress, round);
-
-      // Check claimable amount before calling transaction
-      const claimableTokens = await auctionContract.amountToClaim(
-        walletAddress,
-        round
-      );
-      console.log("Claimable tokens:", claimableTokens.toString());
-
-      if (claimableTokens.eq(0)) {
-        alert("No tokens to claim for this round!");
-        return;
-      }
-
-      // Call the claim function with manual gas limit
-      const claimTx = await auctionContract.amountToClaim(
-        walletAddress,
-        round,
-        {
-          gasLimit: ethers.BigNumber.from("200000"), // Adjust gas limit as needed
-        }
-      );
-
+      const claimTx = await auctionContract.amountToClaim(walletAddress, round);
       const receipt = await claimTx.wait();
       console.log(`Claim successful for round ${round}:`, receipt);
       alert(`Successfully claimed tokens for round ${round}`);
       fetchClaimableRounds(); // Refresh claimable rounds after claiming
     } catch (error) {
       console.error("Error claiming tokens:", error);
-
-      if (error.reason) {
-        console.error("Revert reason:", error.reason);
-      }
-
-      if (error.data) {
-        console.error("Error data:", error.data);
-      }
-
       alert("Failed to claim tokens. See console for details.");
     }
   };
@@ -462,7 +325,7 @@ function AuctionPage() {
       const allRounds = [];
 
       for (let round = 0; round < currentRound; round++) {
-        const userDeposit = await auctionContract.userDepositHistory(
+        const userDeposit = await auctionContract.userDeposits(
           walletAddress,
           round
         );
@@ -478,6 +341,8 @@ function AuctionPage() {
           ? 0
           : userDeposit.mul(1000).div(roundTotalDeposits).toString();
 
+        //console.log("toClaim: ", toClaim);
+
         allRounds.push({
           round,
           totalDeposited: ethers.utils.formatEther(roundTotalDeposits),
@@ -486,7 +351,6 @@ function AuctionPage() {
           claimed,
         });
 
-        console.log("yourDeposit: ", userDeposit);
         // Add to total tokens only if not claimed
       }
 

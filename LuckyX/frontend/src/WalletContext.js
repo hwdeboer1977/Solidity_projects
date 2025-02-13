@@ -18,7 +18,7 @@ export const WalletProvider = ({ children }) => {
 
   const inputTokenAddress = "0x23Cd660055157fA8997f85D65F4e91A0d5FebC32";
   const luckyxAddress = "0xa6D4E6f25849529ce8Ef15f1c12Ae1DeBb62F1Dd";
-  const auctionAddress = "0xEb9Ed228Dca0ebfD6122415c1Db9eA0aaD27a6c8";
+  const auctionAddress = "0x1AbB8C31Cc06759bEeB07184a0DF9A0Ce11CbA9c";
 
   const connectWallet = async () => {
     if (window.ethereum) {

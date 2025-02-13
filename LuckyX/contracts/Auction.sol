@@ -9,13 +9,24 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 // This is an auction contract
 // This is still a test version
 // TO DO: replace block.timestamp because of potential miner manipulation of the block.timestamp 
+// TO DO: state variable with startTimeFirstAuction
+
+// TO DO:   In your contract, you can introduce a new mapping to store historical deposit amounts, which won't be reset after claiming. 
+//          This preserves the history of deposits while ensuring userDeposits is reset to prevent double-claiming.
+// mapping(address => mapping(uint256 => uint256)) public userDepositHistory;
+// Add this in function deposit: userDepositHistory[msg.sender][currentRound] += _amount; // Record deposit history
+
+// How to deploy from VS code?
+// Use deploy.js: npx hardhat run scripts/deploy.js --network sepolia
+
+
 
 contract Auction is Ownable, ReentrancyGuard {
     using SafeERC20 for ERC20Burnable;
 
     uint256 public currentRound;           // Tracks the current round
     uint256 public startTimeCurrentRound;  // Start time of the current round
-    //uint256 public roundDuration = 24 hours; // Duration of each round
+    // uint256 public roundDuration = 24 hours; // Duration of each round
     uint256 public roundDuration = 5 minutes; // Duration of each round (for testing)
 
     uint256 public tokensForAuction = 10000 * 10**18 ; 
@@ -31,6 +42,8 @@ contract Auction is Ownable, ReentrancyGuard {
     mapping(address => uint256) public userDepositCount;
     mapping(address => mapping(uint256 => uint256)) public userDeposits; // User deposits per round
     mapping(uint256 => uint256) public totalDepositsPerRound; // Total deposits per round
+    mapping(address => mapping(uint256 => uint256)) public userDepositHistory; 
+
 
     // Events
     event Deposit(address indexed user, uint256 amount, uint256 round, uint256 totalDepositsPerRound, uint256 userDeposits);
@@ -83,12 +96,15 @@ contract Auction is Ownable, ReentrancyGuard {
         require(tokenInput.balanceOf(msg.sender) >= _amount, "Insufficient token balance");
         require(tokenInput.allowance(msg.sender, address(this)) >= _amount, "Token allowance too low");
         require(userDepositCount[msg.sender] < 10, "Maximum deposits per round reached");
-
+     
         // Track user address
         if (!isUserTracked[msg.sender]) {
             userAddresses.push(msg.sender);
             isUserTracked[msg.sender] = true;
         }
+
+        // **Preserve Original Deposits**
+        userDepositHistory[msg.sender][currentRound] += _amount;  
 
         // Update user deposits
         userDeposits[msg.sender][currentRound] += _amount;
@@ -110,7 +126,11 @@ contract Auction is Ownable, ReentrancyGuard {
         uint256 roundTotalDeposits = totalDepositsPerRound[_round];
         require(roundTotalDeposits > 0, "No deposits made in this round");
 
+        require(luckyX.balanceOf(address(this)) >= toClaim, "Not enough LuckyX tokens in contract");
+
+
         toClaim = (userDeposit * tokensForAuction) / roundTotalDeposits; // Adjust reward calculation logic as needed
+        
 
         // Prevent double claiming
         userDeposits[_user][_round] = 0;
