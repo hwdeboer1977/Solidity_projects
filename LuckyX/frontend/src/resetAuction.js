@@ -8,7 +8,7 @@ require("dotenv").config({
 const RPC_URL = process.env.ALCHEMY_API_SEPOLIA;
 const PRIVATE_KEY = process.env.WALLET_SECRET;
 
-const auctionAddress = process.env.AUCTION_ADDRESS;
+const auctionAddress = "0x467cd335f03b3Fc7EE6DB0884309336310b7924a";
 const AuctionABI = require("./pages/Auction.json");
 
 const provider = new ethers.providers.JsonRpcProvider(RPC_URL);

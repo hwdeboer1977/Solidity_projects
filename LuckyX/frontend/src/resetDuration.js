@@ -4,11 +4,16 @@ const http = require("http");
 require("dotenv").config({
   path: "C:\\Users\\hwdeb\\Documents\\auction\\.env",
 });
+const fs = require("fs");
 
 const RPC_URL = process.env.ALCHEMY_API_SEPOLIA;
 const PRIVATE_KEY = process.env.WALLET_SECRET;
 
-const auctionAddress = process.env.AUCTION_ADDRESS;
+// Load addresses from input.json
+const config = JSON.parse(fs.readFileSync("input.json", "utf8"));
+console.log(config);
+
+const auctionAddress = config.auctionContract;
 const AuctionABI = require("./pages/Auction.json");
 
 const provider = new ethers.providers.JsonRpcProvider(RPC_URL);

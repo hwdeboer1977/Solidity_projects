@@ -410,48 +410,72 @@ function AuctionPage() {
 
     try {
       // Trigger the claim transaction
-      console.log("round:", round);
-      console.log("current round:", currentRound);
-      //const claimTx = await auctionContract.amountToClaim(walletAddress, round);
-
-      // Check claimable amount before calling transaction
-      const claimableTokens = await auctionContract.amountToClaim(
-        walletAddress,
-        round
-      );
-      console.log("Claimable tokens:", claimableTokens.toString());
-
-      if (claimableTokens.eq(0)) {
-        alert("No tokens to claim for this round!");
-        return;
-      }
-
-      // Call the claim function with manual gas limit
-      const claimTx = await auctionContract.amountToClaim(
-        walletAddress,
-        round,
-        {
-          gasLimit: ethers.BigNumber.from("200000"), // Adjust gas limit as needed
-        }
-      );
-
+      const claimTx = await auctionContract.amountToClaim(walletAddress, round);
       const receipt = await claimTx.wait();
       console.log(`Claim successful for round ${round}:`, receipt);
       alert(`Successfully claimed tokens for round ${round}`);
       fetchClaimableRounds(); // Refresh claimable rounds after claiming
     } catch (error) {
       console.error("Error claiming tokens:", error);
-
-      if (error.reason) {
-        console.error("Revert reason:", error.reason);
-      }
-
-      if (error.data) {
-        console.error("Error data:", error.data);
-      }
-
       alert("Failed to claim tokens. See console for details.");
     }
+
+    // // Trigger the claim transaction
+    // console.log("round:", round);
+    // console.log("current round:", currentRound);
+    // //const claimTx = await auctionContract.amountToClaim(walletAddress, round);
+
+    // // Check user deposit before calling claim
+    // let userDeposit = await auctionContract.userDepositHistory(
+    //   walletAddress,
+    //   round
+    // );
+    // userDeposit = ethers.BigNumber.from(userDeposit); // ✅ Ensure it's a BigNumber
+    // console.log(`User deposit for round ${round}:`, userDeposit.toString());
+
+    // if (userDeposit.eq(0)) {
+    //   alert("No deposit recorded for this round! Claim is not possible.");
+    //   return;
+    // }
+
+    // // Check claimable amount before calling transaction
+    // const claimableTokens = await auctionContract.amountToClaim(
+    //   walletAddress,
+    //   round
+    // );
+    // console.log("Claimable tokens:", claimableTokens.toString());
+
+    // if (claimableTokens.eq(0)) {
+    //   alert("No tokens to claim for this round!");
+    //   return;
+    // }
+
+    // // Call the claim function with manual gas limit
+    // const claimTx = await auctionContract.amountToClaim(
+    //   walletAddress,
+    //   round,
+    //   {
+    //     gasLimit: ethers.BigNumber.from("200000"), // Adjust gas limit as needed
+    //   }
+    // );
+
+    // const receipt = await claimTx.wait();
+    // console.log(`Claim successful for round ${round}:`, receipt);
+    // alert(`Successfully claimed tokens for round ${round}`);
+    // fetchClaimableRounds(); // Refresh claimable rounds after claiming
+    // } catch (error) {
+    //   console.error("Error claiming tokens:", error);
+
+    //   if (error.reason) {
+    //     console.error("Revert reason:", error.reason);
+    //   }
+
+    //   if (error.data) {
+    //     console.error("Error data:", error.data);
+    //   }
+
+    //   alert("Failed to claim tokens. See console for details.");
+    // }
   };
 
   const fetchClaimableRounds = useCallback(async () => {
@@ -462,10 +486,16 @@ function AuctionPage() {
       const allRounds = [];
 
       for (let round = 0; round < currentRound; round++) {
-        const userDeposit = await auctionContract.userDepositHistory(
+        const userDepositHistory = await auctionContract.userDepositHistory(
           walletAddress,
           round
         );
+
+        const userDeposit = await auctionContract.userDeposits(
+          walletAddress,
+          round
+        );
+
         const roundTotalDeposits = await auctionContract.totalDepositsPerRound(
           round
         );
@@ -481,7 +511,7 @@ function AuctionPage() {
         allRounds.push({
           round,
           totalDeposited: ethers.utils.formatEther(roundTotalDeposits),
-          yourDeposit: ethers.utils.formatEther(userDeposit),
+          yourDeposit: ethers.utils.formatEther(userDepositHistory),
           toClaim: claimed ? 0 : toClaim,
           claimed,
         });
@@ -646,7 +676,7 @@ function AuctionPage() {
                               Claim
                             </button>
                           ) : (
-                            <span className="no-action">Claimed</span>
+                            <span className="no-action"> Claimed</span>
                           )}
                         </td>
                       </tr>

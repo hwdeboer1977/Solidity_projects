@@ -2,3 +2,112 @@
 .App {
   text-align: center;
 }
+/* Staking Section Wrapper */
+/* Staking Page Wrapper */
+.staking-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px; /* More space between stats and dashboard */
+  padding: 40px;
+  flex-wrap: wrap;
+}
+
+/* Staking Stats Box */
+.staking-stats {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: white;
+  padding: 30px; /* Increased padding */
+  border-radius: 12px;
+  width: 45%;
+  min-width: 450px;
+  text-align: center;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Ensure text inside staking stats is well spaced */
+.staking-stats p {
+  font-size: 18px;
+  margin: 12px 0; /* More spacing between stats */
+}
+
+/* Staking Dashboard Box */
+.staking-dashboard {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 40%;
+  min-width: 400px;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Input Box (only in staking dashboard) */
+.staking-dashboard input[type="number"] {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 20px; /* Increased spacing below input */
+}
+
+/* Button Styling (ONLY in Staking Section) */
+.staking-dashboard button {
+  width: 100%;
+  padding: 14px; /* More padding for a larger feel */
+  font-size: 18px; /* Slightly larger text */
+  margin-top: 12px; /* More space between buttons */
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Button Hover Effects */
+.staking-dashboard button:hover {
+  background: #ff9800;
+  color: white;
+}
+
+/* Individual Button Colors */
+.staking-dashboard button:nth-child(2) {
+  background: #4caf50;
+  color: white;
+} /* Approve */
+.staking-dashboard button:nth-child(3) {
+  background: #1976d2;
+  color: white;
+} /* Stake */
+.staking-dashboard button:nth-child(4) {
+  background: #d32f2f;
+  color: white;
+} /* Withdraw */
+.staking-dashboard button:nth-child(5) {
+  background: #ff9800;
+  color: white;
+} /* Claim */
+
+/* Shorten Ethereum Address for Display */
+.staking-stats p strong {
+  display: block;
+  word-wrap: break-word;
+  font-size: 16px;
+}
+
+/* Make sure it's responsive */
+@media (max-width: 768px) {
+  .staking-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .staking-stats,
+  .staking-dashboard {
+    width: 90%; /* Make full width on small screens */
+    min-width: unset;
+  }
+}

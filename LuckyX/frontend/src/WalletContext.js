@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 // Import the ABI (assuming you have the Auction ABI locally, or you can manually copy it from your Hardhat artifacts)
 import AuctionABI from "./pages/Auction.json"; // Correct import path now
 import ERC20_ABI from "./pages/ERC20.json"; // Correct import path now
+import Staking_ABI from "./pages/Staking.json"; // Correct import path now
 
 export const WalletContext = createContext();
 
@@ -14,11 +15,32 @@ export const WalletProvider = ({ children }) => {
   const [auctionContract, setAuctionContract] = useState(null);
   const [inputTokenContract, setInputTokenContract] = useState(null);
   const [luckyTokenXContract, setLuckyTokenXContract] = useState(null);
+  const [stakingContract, setStakingContract] = useState(null);
   const [signer, setSigner] = useState(null);
+  const [config, setConfig] = useState(null); // Store config data
 
-  const inputTokenAddress = "0x23Cd660055157fA8997f85D65F4e91A0d5FebC32";
-  const luckyxAddress = "0xa6D4E6f25849529ce8Ef15f1c12Ae1DeBb62F1Dd";
-  const auctionAddress = "0x1AbB8C31Cc06759bEeB07184a0DF9A0Ce11CbA9c";
+  useEffect(() => {
+    fetch("/input.json")
+      .then((response) => response.json())
+      .then((data) => {
+        setConfig(data);
+        //console.log("📂 Loaded Addresses:", data);
+      })
+      .catch((error) => console.error("❌ Error loading input.json:", error));
+  }, []); // ✅ No missing dependencies
+
+  // // ✅ Another useEffect for when `config` updates
+  // useEffect(() => {
+  //   if (config) {
+  //     console.log("🎯 Config updated:", config);
+  //   }
+  // }, [config]); // ✅ This runs when config is updated
+
+  // ✅ Only set addresses if config is available
+  const inputTokenAddress = config ? config.inputTokenContract : null;
+  const luckyxAddress = config ? config.luckXContract : null;
+  const auctionAddress = config ? config.auctionContract : null;
+  const stakingAddress = config ? config.stakingContract : null;
 
   const connectWallet = async () => {
     if (window.ethereum) {
@@ -68,6 +90,17 @@ export const WalletProvider = ({ children }) => {
           provider
         );
         setInputTokenContract(tokenInput);
+
+        // Initialize staking contract
+        if (!stakingAddress || !Staking_ABI) {
+          throw new Error("Staking contract address or ABI is missing.");
+        }
+        const stakingContractI = new ethers.Contract(
+          stakingAddress,
+          Staking_ABI,
+          signer
+        );
+        setStakingContract(stakingContractI);
       } catch (error) {
         console.error("Error connecting wallet:", error);
       }
@@ -85,6 +118,7 @@ export const WalletProvider = ({ children }) => {
     setAuctionContract(null);
     setLuckyTokenXContract(null);
     setInputTokenContract(null);
+    setStakingContract(null);
 
     console.log("Wallet Disconnected");
   };
@@ -127,6 +161,14 @@ export const WalletProvider = ({ children }) => {
             provider
           );
           setInputTokenContract(tokenInput);
+
+          // Initialize staking contract
+          const stakingContractI = new ethers.Contract(
+            stakingAddress,
+            Staking_ABI,
+            signer
+          );
+          setStakingContract(stakingContractI);
 
           console.log("Wallet switched to:", newAddress);
         } else {
@@ -174,6 +216,14 @@ export const WalletProvider = ({ children }) => {
             provider
           );
           setInputTokenContract(tokenInput);
+
+          // Initialize staking contract
+          const stakingContractI = new ethers.Contract(
+            stakingAddress,
+            Staking_ABI,
+            signer
+          );
+          setStakingContract(stakingContractI);
         }
       };
 
@@ -190,7 +240,14 @@ export const WalletProvider = ({ children }) => {
         window.ethereum.removeListener("chainChanged", handleChainChanged);
       };
     }
-  }, [walletAddress, chainId]);
+  }, [
+    walletAddress,
+    chainId,
+    auctionAddress,
+    inputTokenAddress,
+    luckyxAddress,
+    stakingAddress,
+  ]);
 
   return (
     <WalletContext.Provider
@@ -206,6 +263,8 @@ export const WalletProvider = ({ children }) => {
         luckyTokenXContract,
         inputTokenContract,
         auctionAddress,
+        stakingAddress,
+        stakingContract,
       }}
     >
       {children}

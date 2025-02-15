@@ -1,6 +1,7 @@
 const { ethers } = require("ethers");
 const WebSocket = require("ws");
 const http = require("http");
+const fs = require("fs");
 require("dotenv").config({
   path: "C:\\Users\\hwdeb\\Documents\\blockstat_solutions_work\\Solidity_projects\\LuckyX\\.env",
 });
@@ -8,8 +9,12 @@ require("dotenv").config({
 const RPC_URL = process.env.ALCHEMY_API_SEPOLIA;
 const PRIVATE_KEY = process.env.WALLET_SECRET;
 
+// Load addresses from input.json
+const config = JSON.parse(fs.readFileSync("input.json", "utf8"));
+console.log(config);
+
 //const auctionAddress = process.env.AUCTION_ADDRESS;
-const auctionAddress = "0x1AbB8C31Cc06759bEeB07184a0DF9A0Ce11CbA9c";
+const auctionAddress = config.auctionContract;
 const AuctionABI = require("./pages/Auction.json");
 console.log(auctionAddress);
 

@@ -19,6 +19,8 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 // How to deploy from VS code?
 // Use deploy.js: npx hardhat run scripts/deploy.js --network sepolia
 
+// Verify: npx hardhat verify --network sepolia 0xYourContractAddress "0xTokenInputAddress" "0xLuckyXAddress"
+// npx hardhat verify --network sepolia 0x1AbB8C31Cc06759bEeB07184a0DF9A0Ce11CbA9c "0x23Cd660055157fA8997f85D65F4e91A0d5FebC32" "0xa6D4E6f25849529ce8Ef15f1c12Ae1DeBb62F1Dd"
 
 
 contract Auction is Ownable, ReentrancyGuard {
@@ -184,6 +186,7 @@ contract Auction is Ownable, ReentrancyGuard {
 
             for (uint256 round = 0; round < maxRounds; round++) {
                 userDeposits[user][round] = 0; // Reset user deposits per round
+                userDepositHistory[user][round] = 0;
             }
 
             isUserTracked[user] = false; // Untrack user
