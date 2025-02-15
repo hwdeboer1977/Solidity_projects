@@ -278,7 +278,6 @@ const StakingPage = () => {
               {currentBiggestDepositor.slice(0, 6)}...
               {currentBiggestDepositor.slice(-4)}
             </p>
-            <button onClick={fetchStakingStats}>🔄 Refresh</button>
           </div>
 
           {/* Right Side: Staking Dashboard */}
