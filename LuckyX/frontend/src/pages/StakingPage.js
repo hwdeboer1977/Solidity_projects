@@ -20,7 +20,7 @@ const StakingPage = () => {
   // Retrieve this information from WalletContect (avaiable in all subpages)
   const {
     walletAddress,
-    //chainId,
+    chainId,
     provider,
     //nativeBalance,
     //auctionContract,
@@ -31,6 +31,7 @@ const StakingPage = () => {
     stakingContract,
   } = useContext(WalletContext);
 
+  // Initialize variables
   const [amount, setAmount] = useState(""); // Input amount for staking
   const [stakedBalance, setStakedBalance] = useState("0");
   const [totalStaked, setTotalStaked] = useState("0");
@@ -41,6 +42,7 @@ const StakingPage = () => {
   const [biggestDepositorPrize, setBiggestDepositorPrize] = useState("0");
   const [currentBiggestDepositor, setCurrentBiggestDepositor] = useState("");
 
+  // Function to get staking statistics
   const fetchStakingStats = useCallback(async () => {
     if (!stakingContract || !provider) return;
 
@@ -133,6 +135,7 @@ const StakingPage = () => {
       alert("❌ Approval failed.");
     }
   };
+
   // **(2) Stake Tokens**
   const stakeTokens = async () => {
     if (!stakingContract || !luckyTokenXContract) {
@@ -204,6 +207,45 @@ const StakingPage = () => {
       fetchStakedBalance();
     }
   }, [stakingContract, walletAddress, stakedBalance]);
+
+  // Listen to events stake, withdraw and claim
+  useEffect(() => {
+    if (!stakingContract) return;
+
+    console.log("🔄 Listening for staking events...");
+
+    // Event: Stake
+    const handleStakeEvent = (user, amount) => {
+      console.log(
+        `📢 Stake Event: ${user} staked ${ethers.utils.formatEther(amount)} ETH`
+      );
+      fetchStakingStats(); // Update UI
+    };
+
+    // Event: Withdraw
+    const handleWithdrawEvent = (user, amount) => {
+      console.log(
+        `📢 Withdraw Event: ${user} withdrew ${ethers.utils.formatEther(
+          amount
+        )} ETH`
+      );
+      fetchStakingStats();
+    };
+
+    return () => {
+      // Cleanup: Remove listeners when component unmounts
+      stakingContract.off("Staked", handleStakeEvent);
+      stakingContract.off("Withdrawn", handleWithdrawEvent);
+      //stakingContract.off("RewardClaimed", handleClaimEvent);
+    };
+  }, [stakingContract, fetchStakingStats]); // Depend on stakingContract
+
+  useEffect(() => {
+    if (!stakingContract || !walletAddress) return;
+
+    console.log("🔄 Updating Staking Stats on Wallet/Chain Change...");
+    fetchStakingStats(); // Refresh stats whenever wallet or chain changes
+  }, [stakingContract, walletAddress, chainId, fetchStakingStats]); // Trigger when these values change
 
   return (
     <div style={pageStyle}>

@@ -132,45 +132,90 @@ export const WalletProvider = ({ children }) => {
           const newAddress = accounts[0];
           setWalletAddress(newAddress);
 
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          const signer = provider.getSigner();
-          setSigner(signer);
+          console.log("🔄 Wallet switched to:", newAddress);
+          console.log("🔍 Checking contract addresses...");
+          console.log("Auction Address (before use):", auctionAddress);
+          console.log("Staking Address:", stakingAddress);
+          console.log("LuckyX Token Address:", luckyxAddress);
+          console.log("Input Token Address:", inputTokenAddress);
 
-          const balanceOf = await provider.getBalance(newAddress);
-          setNativeBalance(
-            Number(ethers.utils.formatEther(balanceOf)).toFixed(2)
-          );
+          // Prevent errors if any address is missing
+          if (
+            !auctionAddress ||
+            !stakingAddress ||
+            !luckyxAddress ||
+            !inputTokenAddress
+          ) {
+            console.error(
+              "❌ ERROR: One or more contract addresses are NULL! Stopping initialization."
+            );
+            return;
+          }
 
-          const auctionContractI = new ethers.Contract(
-            auctionAddress,
-            AuctionABI,
-            signer
-          );
-          setAuctionContract(auctionContractI);
+          try {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            setSigner(signer);
 
-          const tokenLuckyX = new ethers.Contract(
-            luckyxAddress,
-            ERC20_ABI,
-            provider
-          );
-          setLuckyTokenXContract(tokenLuckyX);
+            const balanceOf = await provider.getBalance(newAddress);
+            setNativeBalance(
+              Number(ethers.utils.formatEther(balanceOf)).toFixed(2)
+            );
 
-          const tokenInput = new ethers.Contract(
-            inputTokenAddress,
-            ERC20_ABI,
-            provider
-          );
-          setInputTokenContract(tokenInput);
+            console.log(
+              "📢 Creating Auction Contract with Address:",
+              auctionAddress
+            );
 
-          // Initialize staking contract
-          const stakingContractI = new ethers.Contract(
-            stakingAddress,
-            Staking_ABI,
-            signer
-          );
-          setStakingContract(stakingContractI);
+            // ✅ Ensure the contract is only created when auctionAddress is properly set
+            if (auctionAddress) {
+              const auctionContractI = new ethers.Contract(
+                auctionAddress,
+                AuctionABI,
+                signer
+              );
+              setAuctionContract(auctionContractI);
+            } else {
+              console.error(
+                "❌ ERROR: Auction Address is NULL during contract creation!"
+              );
+            }
 
-          console.log("Wallet switched to:", newAddress);
+            if (stakingAddress) {
+              const stakingContractI = new ethers.Contract(
+                stakingAddress,
+                Staking_ABI,
+                signer
+              );
+              setStakingContract(stakingContractI);
+            } else {
+              console.error(
+                "❌ ERROR: Staking Address is NULL during contract creation!"
+              );
+            }
+
+            if (luckyxAddress) {
+              const tokenLuckyX = new ethers.Contract(
+                luckyxAddress,
+                ERC20_ABI,
+                provider
+              );
+              setLuckyTokenXContract(tokenLuckyX);
+            }
+
+            if (inputTokenAddress) {
+              const tokenInput = new ethers.Contract(
+                inputTokenAddress,
+                ERC20_ABI,
+                provider
+              );
+              setInputTokenContract(tokenInput);
+            }
+
+            console.log("✅ Contracts reinitialized successfully.");
+          } catch (error) {
+            console.error("❌ ERROR: Failed to initialize contracts:", error);
+          }
         } else {
           disconnectWallet();
         }
