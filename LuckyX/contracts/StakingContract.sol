@@ -26,6 +26,7 @@ contract StakingContract is ReentrancyGuard, Ownable (msg.sender) {
     uint256 public constant FEE_DENOMINATOR = 10000; // Basis points denominator (10000 = 100%)
     uint256 public constant PRIZE_PERCENTAGE = 500; // 5%
     uint256 public lastPayoutTime;
+    uint256 public lastExecution;
 
     // Total fees (entry and deposit)
     uint256 public totalFees;
@@ -44,6 +45,28 @@ contract StakingContract is ReentrancyGuard, Ownable (msg.sender) {
     // Rewards Pool (50% of totalFees is allocated here)
     mapping(address => uint256) public claimableRewards;
 
+    // We need to track the weekly winners (biggest depositor and lottery)
+    struct WeeklyReward {
+        uint256 roundNumber;
+        uint256 lotteryPrize;
+        uint256 biggestDepositorPrize;
+        address biggestDepositor;
+        address lotteryWinner;
+        bool biggestDepositorClaimed;
+        bool lotteryClaimed;
+    }
+
+    mapping(uint256 => WeeklyReward) public weeklyRewards;
+    uint256 public currentRound = 1;  // Increment every week
+
+    event WeeklyRewardsDistributed(
+        uint256 round,
+        uint256 lotteryPrize,
+        uint256 biggestDepositorPrize,
+        address biggestDepositor,
+        address lotteryWinner
+    );
+
     // Randomness with blocktimestamp etc unsafe
     // Chainlink VRF is paid service
     // Use NodeJS for randomness
@@ -54,6 +77,7 @@ contract StakingContract is ReentrancyGuard, Ownable (msg.sender) {
     // Events
     event Staked(address indexed user, uint256 amount);
     event Withdrawn(address indexed user, uint256 amount);
+    event RewardClaimed(address indexed user, uint256 amount);
     event LotteryWinner(address indexed winner, uint256 prizeAmount, uint256 totalFees);
     event BiggestDepositorReward(address indexed depositor, uint256 rewardAmount);
     event TokensBurned(uint256 burnedAmount);
@@ -162,63 +186,6 @@ contract StakingContract is ReentrancyGuard, Ownable (msg.sender) {
     }
 
     
-    // Assign each staker a range of numbers based on their stake size relative to the total staked amount.
-    // If a staker has 10% of the total stake, they get 10% of the number range (1–100 in this case).
-    // function pickWinner(uint256 randomNumber) external onlyOwner {
-    //     require(stakers.length > 0, "No stakers available for lottery");
-    //     require(totalStaked > 0, "No tokens staked");
-    //     require(totalFees > 0, "No fees in treasury");
-    //     require(lotteryPool > 0, "Prize amount is too small");
-    //     //require(block.timestamp >= lastPayoutTime + 1 weeks, "Prize can only be paid every week");
-
-    //     // Ensure totalStaked is not zero before using modulo
-    //     if (totalStaked == 0) {
-    //         revert("Cannot pick a winner when no tokens are staked");
-    //     }
- 
-    //     // Calculate the prize amount
-    //     uint256 prizeAmount = lotteryPool;
-
-    //     // Normalize the random number to a range of 0 to totalStaked
-    //     // The randomNumber is normalized to a range between 0 and totalStaked - 1 using the modulo operation. 
-    //     // This ensures that the random number falls within the total amount of tokens staked, 
-    //     // aligning it with the cumulative stake values.
-    //     uint256 normalizedRandom = randomNumber % totalStaked;
-
-    //     // Initialize Variables
-    //     // Weighted Probability: Each staker is assigned a range proportional to their stake. 
-    //     // For example, if a staker has 30% of the total stake, they occupy 30% of the range from 0 to totalStaked - 1
-    //     uint256 cumulativeStake = 0; // Keeps a running total of the stakes as we iterate through each staker.
-    //     address winner; // Will store the address of the selected winner
-
-    //     // Iterate through stakers to find the winner
-    //     for (uint256 i = 0; i < stakers.length; i++) {
-    //         // Update Cumulative Stake: For each staker, their staked amount is added to cumulativeStake.
-    //         cumulativeStake += stakedBalances[stakers[i]];
-    //         // If normalizedRandom is less than cumulativeStake, it means the random number 
-    //         // falls within the range assigned to the current staker.
-    //         if (normalizedRandom < cumulativeStake) {
-    //             // The current staker is then selected as the winner, and the loop is exited using break.
-    //             winner = stakers[i];
-    //             break;
-    //         }
-    //     }
-
-    //     // Ensure a winner was selected
-    //     require(winner != address(0), "Winner selection failed");
-
-    //     // Update last payout time (before external call)
-    //     lastPayoutTime = block.timestamp;
-
-    //     // Transfer first, THEN reset lotteryPool
-    //     tokenX.transfer(winner, prizeAmount);
-
-    //     // Reset lotteryPool after transfer (not before)
-    //     //lotteryPool = 0;
-
-    //     // Emit the LotteryWinner event
-    //     emit LotteryWinner(winner, prizeAmount, totalFees);
-    // }
 
     function distributeWeeklyRewards(uint256 randomNumber) external {
         //require(block.timestamp >= getNextSaturday6PM(), "Can only be run on Saturday at 6 PM UTC");
@@ -227,8 +194,9 @@ contract StakingContract is ReentrancyGuard, Ownable (msg.sender) {
         require(totalFees > 0, "No fees in treasury");
         require(lotteryPool > 0, "Lottery prize too small");
         require(biggestDepositorRewardPool > 0, "Biggest depositor prize too small");
+        require(biggestDepositor != address(0), "Biggest depositor not set");
 
-        // Step 1: Lottery Winner Selection
+        // Step 1: Determine the Lottery Winner
         uint256 normalizedRandom = randomNumber % totalStaked;
         uint256 cumulativeStake = 0;
         address lotteryWinner;
@@ -243,20 +211,60 @@ contract StakingContract is ReentrancyGuard, Ownable (msg.sender) {
         require(lotteryWinner != address(0), "Lottery winner selection failed");
 
         uint256 lotteryPrize = lotteryPool;
-        tokenX.transfer(lotteryWinner, lotteryPrize);
-    
-        // Step 2: Reward the Biggest Depositor of the Week
-        tokenX.transfer(biggestDepositor, biggestDepositorRewardPool);
+        uint256 biggestDepositorPrize = biggestDepositorRewardPool;
+
+        // Step 2: Distribute Rewards
+        bool successLottery = tokenX.transfer(lotteryWinner, lotteryPrize);
+        require(successLottery, "Lottery prize transfer failed");
+
+        bool successDepositor = tokenX.transfer(biggestDepositor, biggestDepositorPrize);
+        require(successDepositor, "Biggest depositor reward transfer failed");
 
         // Step 3: Burn a Portion of Fees
-        
-        tokenX.burn(burnedAmount); // Sending to zero address burns the tokens
+        // bool successBurn = tokenX.burn(burnedAmount);
+        // require(successBurn, "Token burn failed");
 
-        // Emit events for transparency
+        // Step 4: Store Weekly Rewards in History
+        weeklyRewards[currentRound] = WeeklyReward({
+            roundNumber: currentRound,
+            lotteryPrize: lotteryPrize,
+            biggestDepositorPrize: biggestDepositorPrize,
+            biggestDepositor: biggestDepositor,
+            lotteryWinner: lotteryWinner,
+            biggestDepositorClaimed: false,
+            lotteryClaimed: false
+        });
+
+        // Emit Events
         emit LotteryWinner(lotteryWinner, lotteryPrize, totalFees);
-        emit BiggestDepositorReward(biggestDepositor, biggestDepositorRewardPool);
+        emit BiggestDepositorReward(biggestDepositor, biggestDepositorPrize);
         emit TokensBurned(burnedAmount);
-}
+        emit WeeklyRewardsDistributed(currentRound, lotteryPrize, biggestDepositorPrize, biggestDepositor, lotteryWinner);
+
+        // Step 5: Reset for Next Week
+        currentRound++;
+        lastExecution = block.timestamp;
+    }
+
+    // function claimBiggestDepositorPrize(uint256 round) external {
+    //     WeeklyReward storage reward = weeklyRewards[round];
+    //     require(!reward.biggestDepositorClaimed, "Already claimed");
+    //     require(msg.sender == reward.biggestDepositor, "Not the biggest depositor");
+
+    //     reward.biggestDepositorClaimed = true;
+    //     payable(msg.sender).transfer(reward.biggestDepositorPrize);
+    // }
+
+    // function claimLotteryPrize(uint256 round) external {
+    //     WeeklyReward storage reward = weeklyRewards[round];
+    //     require(!reward.lotteryClaimed, "Already claimed");
+    //     require(msg.sender == reward.lotteryWinner, "Not the lottery winner");
+
+    //     reward.lotteryClaimed = true;
+    //     payable(msg.sender).transfer(reward.lotteryPrize);
+    // }
+
+
 
     function claimDripRewards() external nonReentrant {
         uint256 reward = claimableRewards[msg.sender];
@@ -271,8 +279,7 @@ contract StakingContract is ReentrancyGuard, Ownable (msg.sender) {
 
         // Transfer the reward to the user
         tokenX.transfer(msg.sender, reward);
-
-        emit LotteryWinner(msg.sender, reward, dripRewardsPool); // Reuse event for claiming rewards
+        emit RewardClaimed(msg.sender, reward);
     }
 
     // Function to fetch the claimable rewards balance.

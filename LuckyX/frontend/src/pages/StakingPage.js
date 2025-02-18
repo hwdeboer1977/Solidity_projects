@@ -232,6 +232,10 @@ const StakingPage = () => {
       fetchStakingStats();
     };
 
+    // Subscribe to events
+    stakingContract.on("Staked", handleStakeEvent);
+    stakingContract.on("Withdrawn", handleWithdrawEvent);
+
     return () => {
       // Cleanup: Remove listeners when component unmounts
       stakingContract.off("Staked", handleStakeEvent);

@@ -104,6 +104,25 @@
         "type": "uint256"
       }
     ],
+    "name": "RewardClaimed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
     "name": "Staked",
     "type": "event"
   },
@@ -118,6 +137,43 @@
       }
     ],
     "name": "TokensBurned",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "round",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "lotteryPrize",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "biggestDepositorPrize",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "biggestDepositor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "lotteryWinner",
+        "type": "address"
+      }
+    ],
+    "name": "WeeklyRewardsDistributed",
     "type": "event"
   },
   {
@@ -196,6 +252,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "currentRound",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "uint256", "name": "randomNumber", "type": "uint256" }
     ],
@@ -254,6 +317,13 @@
     "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "name": "isStaker",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lastExecution",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -369,6 +439,33 @@
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "weeklyRewards",
+    "outputs": [
+      { "internalType": "uint256", "name": "roundNumber", "type": "uint256" },
+      { "internalType": "uint256", "name": "lotteryPrize", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "biggestDepositorPrize",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "biggestDepositor",
+        "type": "address"
+      },
+      { "internalType": "address", "name": "lotteryWinner", "type": "address" },
+      {
+        "internalType": "bool",
+        "name": "biggestDepositorClaimed",
+        "type": "bool"
+      },
+      { "internalType": "bool", "name": "lotteryClaimed", "type": "bool" }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
