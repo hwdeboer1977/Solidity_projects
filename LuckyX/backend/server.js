@@ -13,27 +13,41 @@ const PORT = process.env.PORT || 5000;
 const RPC_URL = process.env.ALCHEMY_API_SEPOLIA;
 const PRIVATE_KEY = process.env.WALLET_SECRET;
 const STAKING_CA = process.env.STAKING_CA;
-const ABI = ["function distributeWeeklyRewards(uint256 randomNumber) external"];
+const ABI = [
+  "function distributeWeeklyRewards(uint256 randomNumber) external",
+  "function lotteryPool() external view returns (uint256)",
+  "function biggestDepositorRewardPool() external view returns (uint256)",
+];
 
 // Set up provider and wallet
 const provider = new ethers.JsonRpcProvider(RPC_URL);
 const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
-const contract = new ethers.Contract(STAKING_CA, ABI, wallet);
+const stakingContract = new ethers.Contract(STAKING_CA, ABI, wallet);
 
 // Function to distribute weekly rewards
 const distributeRewards = async () => {
-  try {
+  // Fetch the current prize pools from the contract
+  const lotteryPrize = await stakingContract.lotteryPool();
+  const biggestDepositorPrize =
+    await stakingContract.biggestDepositorRewardPool();
+
+  // Only call distributeWeeklyRewards if there are prizes
+  if (lotteryPrize > 0 && biggestDepositorPrize > 0) {
+    // Generate random number (or pass as needed)
     console.log("⏳ Generating random number...");
     const randomNumber = Math.floor(Math.random() * 1e9);
 
-    console.log(`📢 Calling distributeWeeklyRewards(${randomNumber})...`);
-    const tx = await contract.distributeWeeklyRewards(randomNumber);
-    console.log("🔄 Transaction sent, waiting for confirmation...");
-
-    await tx.wait();
-    console.log(`✅ Transaction confirmed! Hash: ${tx.hash}`);
-  } catch (error) {
-    console.error("❌ Error calling contract function:", error);
+    try {
+      console.log(`📢 Calling distributeWeeklyRewards(${randomNumber})...`);
+      const tx = await stakingContract.distributeWeeklyRewards(randomNumber);
+      console.log("Transaction sent:", tx.hash);
+      await tx.wait();
+      console.log("Transaction confirmed!");
+    } catch (error) {
+      console.error("Error distributing rewards:", error);
+    }
+  } else {
+    console.log("No prizes available. Skipping rewards distribution.");
   }
 };
 
@@ -61,15 +75,15 @@ cron.schedule("*/30 * * * *", () => {
   distributeRewards();
 });
 
-// // API Route to Trigger Manually
-// app.post("/trigger-reward", async (req, res) => {
-//   try {
-//     await distributeRewards();
-//     res.status(200).json({ message: "Reward distributed successfully!" });
-//   } catch (error) {
-//     res.status(500).json({ error: "Error distributing rewards." });
-//   }
-// });
+// API Route to Trigger Manually
+app.post("/trigger-reward", async (req, res) => {
+  try {
+    await distributeRewards();
+    res.status(200).json({ message: "Reward distributed successfully!" });
+  } catch (error) {
+    res.status(500).json({ error: "Error distributing rewards." });
+  }
+});
 
 // Start the server
 app.listen(PORT, () => {

@@ -1,7 +1,7 @@
 {
   "owner": "0xBBe2ded2c9E0C8B6f0D36ab8e533509f98Ce05aF",
   "auctionContract": "0x1AbB8C31Cc06759bEeB07184a0DF9A0Ce11CbA9c",
-  "stakingContract": "0x1e66428E54ff9A2A2a5401815bC24479f7C73588",
+  "stakingContract": "0x3ab5c5fEBBbFeCAEf09527ee4B52B768A376817C",
   "luckXContract": "0xa6D4E6f25849529ce8Ef15f1c12Ae1DeBb62F1Dd",
   "inputTokenContract": "0x23Cd660055157fA8997f85D65F4e91A0d5FebC32"
 }

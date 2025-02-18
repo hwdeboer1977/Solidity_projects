@@ -24,7 +24,7 @@ export const WalletProvider = ({ children }) => {
       .then((response) => response.json())
       .then((data) => {
         setConfig(data);
-        //console.log("📂 Loaded Addresses:", data);
+        console.log("📂 Loaded Addresses:", data);
       })
       .catch((error) => console.error("❌ Error loading input.json:", error));
   }, []); // ✅ No missing dependencies

@@ -232,6 +232,15 @@ const StakingPage = () => {
       fetchStakingStats();
     };
 
+    // Listening event: WeeklyRewardsDistributed
+    const handleWeeklyRewards = () => {
+      console.log("Paying the prices");
+      fetchStakingStats();
+    };
+
+    // Event WeeklyRewardsDistributed
+    stakingContract.on("WeeklyRewardsDistributed", handleWeeklyRewards);
+
     // Subscribe to events
     stakingContract.on("Staked", handleStakeEvent);
     stakingContract.on("Withdrawn", handleWithdrawEvent);
@@ -240,6 +249,7 @@ const StakingPage = () => {
       // Cleanup: Remove listeners when component unmounts
       stakingContract.off("Staked", handleStakeEvent);
       stakingContract.off("Withdrawn", handleWithdrawEvent);
+      stakingContract.off("WeeklyRewardsDistributed", handleWeeklyRewards);
       //stakingContract.off("RewardClaimed", handleClaimEvent);
     };
   }, [stakingContract, fetchStakingStats]); // Depend on stakingContract
