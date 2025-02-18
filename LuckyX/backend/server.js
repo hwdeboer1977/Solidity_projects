@@ -55,8 +55,8 @@ const distributeRewards = async () => {
 //   distributeRewards();
 // });
 
-// To test every 5 minutes:
-cron.schedule("*/5 * * * *", () => {
+// To test every 30 minutes:
+cron.schedule("*/30 * * * *", () => {
   console.log("⏳ Running scheduled task every minute...");
   distributeRewards();
 });
