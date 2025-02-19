@@ -35,6 +35,7 @@ const StakingPage = () => {
   const [amount, setAmount] = useState(""); // Input amount for staking
   const [stakedBalance, setStakedBalance] = useState("0");
   const [totalStaked, setTotalStaked] = useState("0");
+  const [userBalance, setUserBalance] = useState("0");
   const [userStake, setUserStake] = useState("0");
   const [userShare, setUserShare] = useState("0%");
   const [lotteryPrizePool, setLotteryPrizePool] = useState("0");
@@ -53,6 +54,7 @@ const StakingPage = () => {
       const userAddress = await signer.getAddress();
 
       // Fetch contract data
+      const userBalanceWei = await luckyTokenXContract.balanceOf(userAddress);
       const totalStakedWei = await stakingContract.totalStaked();
       const userStakeWei = await stakingContract.stakedBalance(userAddress);
       const lotteryPrizePoolWei = await stakingContract.lotteryPool();
@@ -65,6 +67,15 @@ const StakingPage = () => {
         await stakingContract.biggestDepositor();
 
       // Convert BigNumber to human-readable values
+      const decimals = await luckyTokenXContract.decimals(); // Get the token's decimals
+      // Convert balance from wei to token units (considering decimals)
+      const userBalanceFormatted = ethers.utils.formatUnits(
+        userBalanceWei,
+        decimals
+      );
+
+      // Round the balance to the nearest integer
+      const userBalance = parseFloat(userBalanceFormatted).toFixed(0);
       const totalStakedEth = ethers.utils.formatEther(totalStakedWei);
       const userStakeEth = ethers.utils.formatEther(userStakeWei);
       const lotteryPrizePoolEth = ethers.utils.formatEther(lotteryPrizePoolWei);
@@ -79,6 +90,7 @@ const StakingPage = () => {
         : "0%";
 
       // Update state
+      setUserBalance(userBalance);
       setTotalStaked(totalStakedEth);
       setUserStake(userStakeEth);
       setUserShare(share);
@@ -91,7 +103,7 @@ const StakingPage = () => {
     } catch (error) {
       console.error("❌ Error fetching staking stats:", error);
     }
-  }, [stakingContract, provider]); // ✅ Add dependencies here!
+  }, [stakingContract, luckyTokenXContract, provider]); // ✅ Add dependencies here!
 
   // Use useEffect() to call fetchStakingStats() when the component loads:
   useEffect(() => {
@@ -233,6 +245,16 @@ const StakingPage = () => {
     };
 
     // Listening event: WeeklyRewardsDistributed
+    const handleClaims = (user, amount) => {
+      console.log(
+        `📢 Claim Event: ${user} claimed ${ethers.utils.formatEther(
+          amount
+        )} ETH`
+      );
+      fetchStakingStats();
+    };
+
+    // Listening event: WeeklyRewardsDistributed
     const handleWeeklyRewards = () => {
       console.log("Paying the prices");
       fetchStakingStats();
@@ -244,11 +266,13 @@ const StakingPage = () => {
     // Subscribe to events
     stakingContract.on("Staked", handleStakeEvent);
     stakingContract.on("Withdrawn", handleWithdrawEvent);
+    stakingContract.on("RewardClaimed", handleClaims);
 
     return () => {
       // Cleanup: Remove listeners when component unmounts
       stakingContract.off("Staked", handleStakeEvent);
       stakingContract.off("Withdrawn", handleWithdrawEvent);
+      stakingContract.off("RewardClaimed", handleClaims);
       stakingContract.off("WeeklyRewardsDistributed", handleWeeklyRewards);
       //stakingContract.off("RewardClaimed", handleClaimEvent);
     };
@@ -267,25 +291,29 @@ const StakingPage = () => {
         <div className="staking-container">
           {/* Left Side: Staking Stats */}
           <div className="staking-stats">
-            <h2>📊 Staking Stats</h2>
+            <h2>📊 Statistics</h2>
             <p>
-              <strong>Total Staked:</strong> {totalStaked} ETH
+              <strong>User balance:</strong> {userBalance} LuckyX
+            </p>
+
+            <p>
+              <strong>Total Staked:</strong> {totalStaked} LuckyX
             </p>
             <p>
-              <strong>Your Stake:</strong> {userStake} ETH
+              <strong>Your Stake:</strong> {userStake} LuckyX
             </p>
             <p>
               <strong>Your Share:</strong> {userShare}
             </p>
             <p>
-              <strong>Lottery Prize Pool:</strong> {lotteryPrizePool} ETH
+              <strong>Lottery Prize Pool:</strong> {lotteryPrizePool} LuckyX
             </p>
             <p>
-              <strong>Rewards to Claim:</strong> {rewardsToClaim} ETH
+              <strong>Rewards to Claim:</strong> {rewardsToClaim} LuckyX
             </p>
             <p>
               <strong>Biggest Depositor Prize:</strong> {biggestDepositorPrize}{" "}
-              ETH
+              LuckyX
             </p>
             <p>
               <strong>Current Biggest Depositor:</strong>{" "}
@@ -309,7 +337,23 @@ const StakingPage = () => {
             <button onClick={claimRewards}>💰 Claim Rewards</button>
           </div>
         </div>
-        {/* Left Side: Cards */}
+
+        {/* Middle Side: Image and Text */}
+        <div style={imageContainerStyle}>
+          <img
+            src={Treasury}
+            alt="Treasury Chest"
+            style={{
+              width: "400px",
+              maxWidth: "100%",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+            }}
+          />
+          <h1 style={winnerTextStyle}>And the winner is?</h1>
+        </div>
+
+        {/* Right Side: Cards */}
         <div style={cardsContainerStyle}>
           {/* Drip Pool Rewards */}
           <div style={cardStyle}>
@@ -359,20 +403,7 @@ const StakingPage = () => {
             </div>
           </div>
         </div>
-        {/* Right Side: Image and Text */}
-        <div style={imageContainerStyle}>
-          <img
-            src={Treasury}
-            alt="Treasury Chest"
-            style={{
-              width: "400px",
-              maxWidth: "100%",
-              borderRadius: "10px",
-              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-            }}
-          />
-          <h1 style={winnerTextStyle}>And the winner is?</h1>
-        </div>
+
         {/* Wallet Connect Section */}
         <div className="wallet-connect-container"></div>
       </div>
@@ -383,21 +414,26 @@ const StakingPage = () => {
 const pageStyle = {
   padding: "20px",
   fontFamily: "Arial, sans-serif",
-  maxWidth: "1200px",
   margin: "auto",
+  width: "100%", // Take full width available
 };
 
 const contentStyle = {
   display: "flex",
-  alignItems: "flex-start",
+  flexWrap: "wrap", // Allow the content to wrap and fill space
+  justifyContent: "space-between", // Distribute space evenly
   gap: "20px",
+  width: "100%", // Ensure content takes up the full width
+  margin: "auto",
 };
-
 const cardsContainerStyle = {
-  flex: "2",
-  display: "grid",
-  gridTemplateColumns: "1fr",
+  display: "flex",
+  flexWrap: "wrap", // Allow wrapping on smaller screens
   gap: "20px",
+  justifyContent: "space-between", // Distribute space between the cards
+  flex: "1", // Allow cards to take up flexible space
+  marginTop: "20px", // Space between stats and cards
+  width: "100%", // Ensure content takes up the full width
 };
 
 const cardStyle = {
@@ -409,11 +445,12 @@ const cardStyle = {
 };
 
 const imageContainerStyle = {
-  flex: "1",
+  flex: "1", // Allow image container to grow and take up space
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
+  marginTop: "20px", // Space between image and cards
 };
 
 const winnerTextStyle = {

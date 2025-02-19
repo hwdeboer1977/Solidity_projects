@@ -2,62 +2,73 @@
 .App {
   text-align: center;
 }
+
 /* Staking Section Wrapper */
-/* Staking Page Wrapper */
 .staking-container {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 40px; /* More space between stats and dashboard */
-  padding: 40px;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* Allow wrapping to utilize full screen space */
+  justify-content: space-between; /* Spread the content evenly */
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px; /* Prevent stretching on large screens */
+  margin: auto;
+  width: 100%;
 }
-
 /* Staking Stats Box */
 .staking-stats {
   background: linear-gradient(135deg, #1e3c72, #2a5298);
   color: white;
-  padding: 30px; /* Increased padding */
+  padding: 20px;
   border-radius: 12px;
-  width: 45%;
-  min-width: 450px;
+  width: 48%; /* Reduced width to make better use of space */
+  min-width: 400px;
   text-align: center;
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+.staking-stats:hover {
+  transform: scale(1.05); /* Slight zoom on hover for interactivity */
 }
 
 /* Ensure text inside staking stats is well spaced */
 .staking-stats p {
-  font-size: 18px;
-  margin: 12px 0; /* More spacing between stats */
+  font-size: 16px;
+  margin: 12px 0;
 }
 
 /* Staking Dashboard Box */
 .staking-dashboard {
   background: white;
-  padding: 30px;
+  padding: 25px;
   border-radius: 12px;
-  width: 40%;
-  min-width: 400px;
+  width: 48%; /* Adjusted to fill space effectively */
+  min-width: 380px;
   box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
+  transition: all 0.3s ease-in-out;
+}
+
+.staking-dashboard:hover {
+  transform: scale(1.05);
 }
 
 /* Input Box (only in staking dashboard) */
 .staking-dashboard input[type="number"] {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  margin-bottom: 20px; /* Increased spacing below input */
+  margin-bottom: 15px;
 }
 
 /* Button Styling (ONLY in Staking Section) */
 .staking-dashboard button {
   width: 100%;
-  padding: 14px; /* More padding for a larger feel */
-  font-size: 18px; /* Slightly larger text */
-  margin-top: 12px; /* More space between buttons */
+  padding: 12px;
+  font-size: 16px;
+  margin-top: 10px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -98,16 +109,19 @@
   font-size: 16px;
 }
 
-/* Make sure it's responsive */
 @media (max-width: 768px) {
   .staking-container {
-    flex-direction: column;
+    flex-direction: column; /* Stack elements vertically on small screens */
     align-items: center;
   }
 
   .staking-stats,
   .staking-dashboard {
-    width: 90%; /* Make full width on small screens */
+    width: 100%; /* Full width on small screens */
     min-width: unset;
+  }
+
+  .staking-container > div {
+    margin-bottom: 20px; /* Space between each section on small screens */
   }
 }

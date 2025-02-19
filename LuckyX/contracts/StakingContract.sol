@@ -220,6 +220,10 @@ contract StakingContract is ReentrancyGuard, Ownable (msg.sender) {
         bool successDepositor = tokenX.transfer(biggestDepositor, biggestDepositorPrize);
         require(successDepositor, "Biggest depositor reward transfer failed");
 
+        // Reset the prizes to 0 after transferring
+        lotteryPool = 0;
+        biggestDepositorRewardPool = 0;
+
         // Step 3: Burn a Portion of Fees
         // bool successBurn = tokenX.burn(burnedAmount);
         // require(successBurn, "Token burn failed");
