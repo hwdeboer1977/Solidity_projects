@@ -286,59 +286,60 @@ const StakingPage = () => {
   }, [stakingContract, walletAddress, chainId, fetchStakingStats]); // Trigger when these values change
 
   return (
-    <div style={pageStyle}>
-      <div style={contentStyle}>
-        <div className="staking-container">
-          {/* Left Side: Staking Stats */}
-          <div className="staking-stats">
-            <h2>📊 Statistics</h2>
-            <p>
-              <strong>User balance:</strong> {userBalance} LuckyX
-            </p>
+    <div className="container-all">
+      {/* Left Side: Staking Stats */}
+      <div className="staking-container">
+        <div className="staking-stats">
+          {/* Left Side: Staking Stats: top */}
+          <h2>📊 Statistics</h2>
+          <p>
+            <strong>User balance:</strong> {userBalance} LuckyX
+          </p>
 
-            <p>
-              <strong>Total Staked:</strong> {totalStaked} LuckyX
-            </p>
-            <p>
-              <strong>Your Stake:</strong> {userStake} LuckyX
-            </p>
-            <p>
-              <strong>Your Share:</strong> {userShare}
-            </p>
-            <p>
-              <strong>Lottery Prize Pool:</strong> {lotteryPrizePool} LuckyX
-            </p>
-            <p>
-              <strong>Rewards to Claim:</strong> {rewardsToClaim} LuckyX
-            </p>
-            <p>
-              <strong>Biggest Depositor Prize:</strong> {biggestDepositorPrize}{" "}
-              LuckyX
-            </p>
-            <p>
-              <strong>Current Biggest Depositor:</strong>{" "}
-              {currentBiggestDepositor.slice(0, 6)}...
-              {currentBiggestDepositor.slice(-4)}
-            </p>
-          </div>
-
-          {/* Right Side: Staking Dashboard */}
-          <div className="staking-dashboard">
-            <h3>Staking Dashboard</h3>
-            <input
-              type="number"
-              placeholder="Enter amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-            <button onClick={approveStaking}>✅ Approve Staking</button>
-            <button onClick={stakeTokens}>🔹 Stake</button>
-            <button onClick={withdrawStake}>❌ Withdraw Stake</button>
-            <button onClick={claimRewards}>💰 Claim Rewards</button>
-          </div>
+          <p>
+            <strong>Total Staked:</strong> {totalStaked} LuckyX
+          </p>
+          <p>
+            <strong>Your Stake:</strong> {userStake} LuckyX
+          </p>
+          <p>
+            <strong>Your Share:</strong> {userShare}
+          </p>
+          <p>
+            <strong>Lottery Prize Pool:</strong> {lotteryPrizePool} LuckyX
+          </p>
+          <p>
+            <strong>Rewards to Claim:</strong> {rewardsToClaim} LuckyX
+          </p>
+          <p>
+            <strong>Biggest Depositor Prize:</strong> {biggestDepositorPrize}{" "}
+            LuckyX
+          </p>
+          <p>
+            <strong>Current Biggest Depositor:</strong>{" "}
+            {currentBiggestDepositor.slice(0, 6)}...
+            {currentBiggestDepositor.slice(-4)}
+          </p>
         </div>
 
-        {/* Middle Side: Image and Text */}
+        {/* Left Side: Staking Stats: Bottom */}
+        <div className="staking-dashboard">
+          <h3>Staking Dashboard</h3>
+          <input
+            type="number"
+            placeholder="Enter amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+          <button onClick={approveStaking}>✅ Approve Staking</button>
+          <button onClick={stakeTokens}>🔹 Stake</button>
+          <button onClick={withdrawStake}>❌ Withdraw Stake</button>
+          <button onClick={claimRewards}>💰 Claim Rewards</button>
+        </div>
+      </div>
+
+      {/* Middle Side: Image and Text */}
+      <div className="image-container">
         <div style={imageContainerStyle}>
           <img
             src={Treasury}
@@ -352,8 +353,10 @@ const StakingPage = () => {
           />
           <h1 style={winnerTextStyle}>And the winner is?</h1>
         </div>
+      </div>
 
-        {/* Right Side: Cards */}
+      {/* Right Side: Cards */}
+      <div className="card-container">
         <div style={cardsContainerStyle}>
           {/* Drip Pool Rewards */}
           <div style={cardStyle}>
@@ -403,29 +406,14 @@ const StakingPage = () => {
             </div>
           </div>
         </div>
-
-        {/* Wallet Connect Section */}
-        <div className="wallet-connect-container"></div>
       </div>
+
+      {/* Wallet Connect Section */}
+      <div className="wallet-connect-container"></div>
     </div>
   );
 };
 
-const pageStyle = {
-  padding: "20px",
-  fontFamily: "Arial, sans-serif",
-  margin: "auto",
-  width: "100%", // Take full width available
-};
-
-const contentStyle = {
-  display: "flex",
-  flexWrap: "wrap", // Allow the content to wrap and fill space
-  justifyContent: "space-between", // Distribute space evenly
-  gap: "20px",
-  width: "100%", // Ensure content takes up the full width
-  margin: "auto",
-};
 const cardsContainerStyle = {
   display: "flex",
   flexWrap: "wrap", // Allow wrapping on smaller screens

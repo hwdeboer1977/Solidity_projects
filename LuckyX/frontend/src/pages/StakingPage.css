@@ -3,17 +3,46 @@
   text-align: center;
 }
 
-/* Staking Section Wrapper */
-.staking-container {
-  display: flex;
-  flex-wrap: wrap; /* Allow wrapping to utilize full screen space */
-  justify-content: space-between; /* Spread the content evenly */
+/* Container for all three columns */
+.container-all {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr; /* 3 columns */
   gap: 20px;
   padding: 20px;
-  max-width: 1200px; /* Prevent stretching on large screens */
+  max-width: 2000px; /* Adjust this is smaller screens? */
   margin: auto;
   width: 100%;
 }
+
+/* Staking Section: Left Side */
+.staking-container {
+  display: flex;
+  flex-direction: column; /* Stack stats and dashboard vertically */
+  gap: 20px;
+  padding: 20px;
+  width: 100%;
+}
+
+.image-container {
+  display: flex;
+  flex-direction: column; /* Stack image and text vertically */
+  align-items: center; /* Center the content */
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  width: 100%;
+  margin-top: -200px; /* Adjust this value to move the image higher */
+}
+
+/* Right Side: Cards Container */
+.card-container {
+  display: flex;
+  flex-direction: column; /* Stack cards vertically */
+  gap: 20px;
+  padding: 20px;
+  width: 100%;
+}
+
 /* Staking Stats Box */
 .staking-stats {
   background: linear-gradient(135deg, #1e3c72, #2a5298);
@@ -109,19 +138,42 @@
   font-size: 16px;
 }
 
-@media (max-width: 768px) {
+/* Tablet Layout (For screens up to 1024px) */
+@media (max-width: 1024px) {
+  .container-all {
+    grid-template-columns: 1fr 1fr; /* 2 columns */
+  }
+
   .staking-container {
-    flex-direction: column; /* Stack elements vertically on small screens */
-    align-items: center;
+    padding: 15px;
   }
 
-  .staking-stats,
-  .staking-dashboard {
-    width: 100%; /* Full width on small screens */
-    min-width: unset;
+  .image-container {
+    padding: 15px;
   }
 
-  .staking-container > div {
-    margin-bottom: 20px; /* Space between each section on small screens */
+  .card-container {
+    padding: 15px;
+  }
+}
+
+/* Mobile Layout (For screens up to 768px) */
+@media (max-width: 768px) {
+  .container-all {
+    grid-template-columns: 1fr; /* Stack into one column */
+    padding: 10px;
+  }
+
+  .staking-container {
+    padding: 15px;
+  }
+
+  .image-container {
+    padding: 10px;
+    margin-top: 10px;
+  }
+
+  .card-container {
+    padding: 10px;
   }
 }
