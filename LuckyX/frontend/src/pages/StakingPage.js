@@ -345,8 +345,7 @@ const StakingPage = () => {
             src={Treasury}
             alt="Treasury Chest"
             style={{
-              width: "400px",
-              maxWidth: "100%",
+              maxWidth: "60%",
               borderRadius: "10px",
               boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
             }}
@@ -363,12 +362,12 @@ const StakingPage = () => {
             <div style={iconTextStyle}>
               <FontAwesomeIcon icon={faDroplet} size="2x" color="#007BFF" />
               <div>
-                <h2>Drip Pool Rewards</h2>
+                <h2>Staking Rewards</h2>
                 <p>
-                  Stake your tokens and watch the rewards roll in! Every day,{" "}
-                  <strong>1% of the treasury pool</strong> is distributed to
-                  stakers, ensuring a steady stream of earnings. The longer you
-                  stake, the more you grow.
+                  Stake your tokens and watch the rewards roll in! 50% of the
+                  entry and exit fees are instantly distributed to stakers,
+                  providing further rewards for participating in the staking
+                  program
                 </p>
               </div>
             </div>
