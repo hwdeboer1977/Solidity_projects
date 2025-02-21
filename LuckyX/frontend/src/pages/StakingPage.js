@@ -364,25 +364,30 @@ const StakingPage = () => {
               <div>
                 <h2>Staking Rewards</h2>
                 <p>
-                  Stake your tokens and watch the rewards roll in! 50% of the
-                  entry and exit fees are instantly distributed to stakers,
-                  providing further rewards for participating in the staking
-                  program
+                  Stake your tokens and watch the rewards roll in!{" "}
+                  <strong>50% of the entry and exit fees</strong> are instantly
+                  distributed to stakers, providing further rewards for
+                  participating in the staking program
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Lottery Jackpot */}
+          {/* Lottery Jackpot and Biggest Depositor Prize */}
           <div style={cardStyle}>
             <div style={iconTextStyle}>
               <FontAwesomeIcon icon={faTrophy} size="2x" color="#FFD700" />
               <div>
-                <h2>Lottery Jackpot</h2>
+                <h2>Lottery Jackpot & Biggest Depositor</h2>
                 <p>
-                  Feeling lucky? <strong>10% of the treasury</strong> fuels an
-                  exciting lottery prize pool. By staking, you’re automatically
-                  entered for a chance to win big!
+                  {/*<h2>Feeling lucky?</h2>*/}
+                  <p>
+                    <strong>30% of the treasury</strong> contributes to an
+                    exciting lottery prize pool! By staking, you're
+                    automatically entered for a chance to win big. Additionally,{" "}
+                    <strong>10% of the treasury</strong> is awarded weekly to
+                    the biggest depositor as a prize!
+                  </p>
                 </p>
               </div>
             </div>
