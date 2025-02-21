@@ -9,7 +9,7 @@
   grid-template-columns: 1fr 2fr 1fr; /* 3 columns */
   gap: 20px;
   padding: 20px;
-  max-width: 1800px; /* Adjust for smaller screens */
+  max-width: 2000px; /* Adjust for smaller screens */
   margin: auto;
   width: 100%;
   height: 100vh;

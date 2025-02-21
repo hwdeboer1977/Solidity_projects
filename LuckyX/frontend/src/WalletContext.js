@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import AuctionABI from "./pages/Auction.json"; // Correct import path now
 import ERC20_ABI from "./pages/ERC20.json"; // Correct import path now
 import Staking_ABI from "./pages/Staking.json"; // Correct import path now
+import Faucet_ABI from "./pages/Faucet.json"; // Correct import path now
 
 export const WalletContext = createContext();
 
@@ -16,6 +17,7 @@ export const WalletProvider = ({ children }) => {
   const [inputTokenContract, setInputTokenContract] = useState(null);
   const [luckyTokenXContract, setLuckyTokenXContract] = useState(null);
   const [stakingContract, setStakingContract] = useState(null);
+  const [faucetContract, setFaucetContract] = useState(null);
   const [signer, setSigner] = useState(null);
   const [config, setConfig] = useState(null); // Store config data
 
@@ -41,6 +43,7 @@ export const WalletProvider = ({ children }) => {
   const luckyxAddress = config ? config.luckXContract : null;
   const auctionAddress = config ? config.auctionContract : null;
   const stakingAddress = config ? config.stakingContract : null;
+  const faucetAddress = config ? config.faucetContract : null;
 
   const connectWallet = async () => {
     if (window.ethereum) {
@@ -101,6 +104,13 @@ export const WalletProvider = ({ children }) => {
           signer
         );
         setStakingContract(stakingContractI);
+
+        const faucetContract = new ethers.Contract(
+          faucetAddress,
+          Faucet_ABI,
+          signer
+        );
+        setFaucetContract(faucetContract);
       } catch (error) {
         console.error("Error connecting wallet:", error);
       }
@@ -119,6 +129,7 @@ export const WalletProvider = ({ children }) => {
     setLuckyTokenXContract(null);
     setInputTokenContract(null);
     setStakingContract(null);
+    setFaucetContract(null);
 
     console.log("Wallet Disconnected");
   };
@@ -138,6 +149,7 @@ export const WalletProvider = ({ children }) => {
           console.log("Staking Address:", stakingAddress);
           console.log("LuckyX Token Address:", luckyxAddress);
           console.log("Input Token Address:", inputTokenAddress);
+          console.log("Faucet Address:", faucetAddress);
 
           // Prevent errors if any address is missing
           if (
@@ -201,6 +213,15 @@ export const WalletProvider = ({ children }) => {
                 provider
               );
               setLuckyTokenXContract(tokenLuckyX);
+            }
+
+            if (faucetAddress) {
+              const faucetContract = new ethers.Contract(
+                faucetAddress,
+                Faucet_ABI,
+                provider
+              );
+              setFaucetContract(faucetContract);
             }
 
             if (inputTokenAddress) {
@@ -269,6 +290,13 @@ export const WalletProvider = ({ children }) => {
             signer
           );
           setStakingContract(stakingContractI);
+
+          const faucetContract = new ethers.Contract(
+            faucetAddress,
+            Faucet_ABI,
+            signer
+          );
+          setFaucetContract(faucetContract);
         }
       };
 
@@ -292,6 +320,7 @@ export const WalletProvider = ({ children }) => {
     inputTokenAddress,
     luckyxAddress,
     stakingAddress,
+    faucetAddress,
   ]);
 
   return (
@@ -310,6 +339,8 @@ export const WalletProvider = ({ children }) => {
         auctionAddress,
         stakingAddress,
         stakingContract,
+        faucetAddress,
+        faucetContract,
       }}
     >
       {children}

@@ -3,5 +3,6 @@
   "auctionContract": "0x1AbB8C31Cc06759bEeB07184a0DF9A0Ce11CbA9c",
   "stakingContract": "0x3ab5c5fEBBbFeCAEf09527ee4B52B768A376817C",
   "luckXContract": "0xa6D4E6f25849529ce8Ef15f1c12Ae1DeBb62F1Dd",
-  "inputTokenContract": "0x23Cd660055157fA8997f85D65F4e91A0d5FebC32"
+  "inputTokenContract": "0x23Cd660055157fA8997f85D65F4e91A0d5FebC32",
+  "faucetContract": "0xDA710f3540Cb22E30De494F18670974b1A0a42Dc"
 }

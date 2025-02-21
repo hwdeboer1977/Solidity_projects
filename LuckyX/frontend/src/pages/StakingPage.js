@@ -29,6 +29,8 @@ const StakingPage = () => {
     //auctionAddress,
     stakingAddress,
     stakingContract,
+    faucetAddress,
+    faucetContract,
   } = useContext(WalletContext);
 
   // Initialize variables
@@ -42,6 +44,7 @@ const StakingPage = () => {
   const [rewardsToClaim, setRewardsToClaim] = useState("0");
   const [biggestDepositorPrize, setBiggestDepositorPrize] = useState("0");
   const [currentBiggestDepositor, setCurrentBiggestDepositor] = useState("");
+  const [faucetBalance, setFaucetBalance] = useState("0");
 
   // Function to get staking statistics
   const fetchStakingStats = useCallback(async () => {
@@ -55,6 +58,12 @@ const StakingPage = () => {
 
       // Fetch contract data
       const userBalanceWei = await luckyTokenXContract.balanceOf(userAddress);
+
+      // No balanceOf function
+
+      const faucetBalanceWei = await luckyTokenXContract.balanceOf(
+        faucetAddress
+      );
       const totalStakedWei = await stakingContract.totalStaked();
       const userStakeWei = await stakingContract.stakedBalance(userAddress);
       const lotteryPrizePoolWei = await stakingContract.lotteryPool();
@@ -77,6 +86,7 @@ const StakingPage = () => {
       // Round the balance to the nearest integer
       const userBalance = parseFloat(userBalanceFormatted).toFixed(0);
       const totalStakedEth = ethers.utils.formatEther(totalStakedWei);
+      const faucetBalanceETH = ethers.utils.formatEther(faucetBalanceWei);
       const userStakeEth = ethers.utils.formatEther(userStakeWei);
       const lotteryPrizePoolEth = ethers.utils.formatEther(lotteryPrizePoolWei);
       const rewardsToClaimEth = ethers.utils.formatEther(rewardsToClaimWei);
@@ -92,6 +102,7 @@ const StakingPage = () => {
       // Update state
       setUserBalance(userBalance);
       setTotalStaked(totalStakedEth);
+      setFaucetBalance(faucetBalanceETH);
       setUserStake(userStakeEth);
       setUserShare(share);
       setLotteryPrizePool(lotteryPrizePoolEth);
@@ -103,7 +114,7 @@ const StakingPage = () => {
     } catch (error) {
       console.error("❌ Error fetching staking stats:", error);
     }
-  }, [stakingContract, luckyTokenXContract, provider]); // ✅ Add dependencies here!
+  }, [stakingContract, luckyTokenXContract, faucetAddress, provider]); // ✅ Add dependencies here!
 
   // Use useEffect() to call fetchStakingStats() when the component loads:
   useEffect(() => {
@@ -203,6 +214,19 @@ const StakingPage = () => {
     }
   };
 
+  // **(5) Claim From Faucet**
+  const claimFaucet = async () => {
+    if (!faucetContract) return alert("Faucet contract not loaded");
+    try {
+      const tx = await faucetContract.claim();
+      await tx.wait();
+      alert("✅ Token claim from faucet successfully!");
+    } catch (error) {
+      console.error("Claim error:", error);
+      alert("❌ Token claim from faucet failed");
+    }
+  };
+
   // **(1) Fetch Staked Balance When Component Mounts**
   useEffect(() => {
     if (stakingContract && walletAddress) {
@@ -260,6 +284,16 @@ const StakingPage = () => {
       fetchStakingStats();
     };
 
+    // Listening event: new deposit Faucet
+    const handleFaucetDeposit = (user, amount) => {
+      fetchStakingStats();
+    };
+
+    // Listening event: new claim Faucet
+    const handleFaucetClaim = (user, amount) => {
+      fetchStakingStats();
+    };
+
     // Event WeeklyRewardsDistributed
     stakingContract.on("WeeklyRewardsDistributed", handleWeeklyRewards);
 
@@ -267,6 +301,8 @@ const StakingPage = () => {
     stakingContract.on("Staked", handleStakeEvent);
     stakingContract.on("Withdrawn", handleWithdrawEvent);
     stakingContract.on("RewardClaimed", handleClaims);
+    faucetContract.on("TokensDeposited", handleFaucetDeposit);
+    faucetContract.on("TokensClaimed", handleFaucetClaim);
 
     return () => {
       // Cleanup: Remove listeners when component unmounts
@@ -274,9 +310,11 @@ const StakingPage = () => {
       stakingContract.off("Withdrawn", handleWithdrawEvent);
       stakingContract.off("RewardClaimed", handleClaims);
       stakingContract.off("WeeklyRewardsDistributed", handleWeeklyRewards);
+      faucetContract.off("TokensDeposited", handleFaucetDeposit);
+      faucetContract.off("TokensClaimed", handleFaucetClaim);
       //stakingContract.off("RewardClaimed", handleClaimEvent);
     };
-  }, [stakingContract, fetchStakingStats]); // Depend on stakingContract
+  }, [stakingContract, faucetContract, fetchStakingStats]); // Depend on stakingContract
 
   useEffect(() => {
     if (!stakingContract || !walletAddress) return;
@@ -351,6 +389,9 @@ const StakingPage = () => {
             }}
           />
           <h1 style={winnerTextStyle}>And the winner is?</h1>
+          <h1>Get some test tokens here:</h1>
+          <button onClick={claimFaucet}> Get test tokens</button>
+          <h1>Balance of Faucet: {faucetBalance}</h1>
         </div>
       </div>
 
