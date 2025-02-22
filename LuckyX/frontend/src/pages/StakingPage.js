@@ -45,6 +45,48 @@ const StakingPage = () => {
   const [biggestDepositorPrize, setBiggestDepositorPrize] = useState("0");
   const [currentBiggestDepositor, setCurrentBiggestDepositor] = useState("");
   const [faucetBalance, setFaucetBalance] = useState("0");
+  const [timeRemaining, setTimeRemaining] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const now = new Date();
+      const targetDate = getNextSaturday6PMUTC();
+      const remainingTime = targetDate - now;
+
+      // If the target date is in the future, calculate the remaining time
+      if (remainingTime > 0) {
+        const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+        const hours = Math.floor(
+          (remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        const minutes = Math.floor(
+          (remainingTime % (1000 * 60 * 60)) / (1000 * 60)
+        );
+        const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+        setTimeRemaining({ days, hours, minutes, seconds });
+      } else {
+        // If the target time has passed, reset it for next Saturday
+        setTimeRemaining({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    }, 1000); // Update every second
+
+    return () => clearInterval(intervalId); // Cleanup on component unmount
+  }, []);
+
+  // Function to calculate next Saturday 6 PM UTC
+  const getNextSaturday6PMUTC = () => {
+    const now = new Date();
+    const nextSaturday = new Date(now);
+    nextSaturday.setUTCDate(now.getUTCDate() + ((6 - now.getUTCDay() + 7) % 7)); // Find next Saturday
+    nextSaturday.setUTCHours(18, 0, 0, 0); // Set time to 6 PM UTC
+    return nextSaturday;
+  };
 
   // Function to get staking statistics
   const fetchStakingStats = useCallback(async () => {
@@ -388,7 +430,13 @@ const StakingPage = () => {
               boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
             }}
           />
-          <h1 style={winnerTextStyle}>And the winner is?</h1>
+          <div>
+            <h1>And the winner is?</h1>
+            <h2>
+              {timeRemaining.days}d {timeRemaining.hours}h{" "}
+              {timeRemaining.minutes}m {timeRemaining.seconds}s
+            </h2>
+          </div>
           <h1>Get some test tokens here:</h1>
           <button onClick={claimFaucet}> Get test tokens</button>
           <h1>Balance of Faucet: {faucetBalance}</h1>
@@ -484,13 +532,6 @@ const imageContainerStyle = {
   alignItems: "center",
   justifyContent: "center",
   marginTop: "20px", // Space between image and cards
-};
-
-const winnerTextStyle = {
-  marginTop: "20px",
-  fontSize: "1.8rem",
-  color: "#333",
-  textAlign: "center",
 };
 
 export default StakingPage;
