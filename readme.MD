@@ -2,7 +2,7 @@
 
 This repository contains a collection of smart contract–based decentralized applications (DApps) built using **Solidity**, with full-stack support including frontend interfaces and optional backend logic.
 
-These projects cover real-world decentralized use cases such as **auctions**, **staking**, **lotteries**, and **token distributions**.
+These projects cover real-world decentralized use cases such as **auctions**, **dao voting**, **staking**, **lotteries**, and **token distributions**.
 
 ---
 
@@ -20,3 +20,13 @@ An experimental DApp that combines:
 > 📍 [Explore the LuckyX subproject ➜](./LuckyX/README.md)
 
 ---
+
+### 🗳️ [`DAO DApp`](./DAO-app/)
+
+A simple decentralized governance application that allows:
+
+- 📝 Make a proposal
+- 🗳️ Vote during a predefined voting period
+- ✅ Queue and execute proposals once passed
+
+🔗 [Explore the DAO DApp subproject ➝](./DAO-app/README.md)
